@@ -1,0 +1,89 @@
+<button (click)="onScrollTo()"> sdg</button>
+
+<sat-virtual-grid #sc [source]="({grids: [{id: '0', rows: items, columns: columns}]})" [buffer]="10"></sat-virtual-grid>
+
+
+<ng-template #section let-cell>
+  <div class="section">
+    <div class="header">{{cell.content}}</div>
+  </div>
+</ng-template>
+
+
+<ng-template #subSection let-cell>
+  <div class="subSection" [class]="cell.class">
+    <div class="header">{{cell.content}}</div>
+  </div>
+</ng-template>
+
+<ng-template #columnCollapsed let-cell>
+  <div class="column-collapsed">
+    <div class="header">
+      <div>
+        {{cell.content}}
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #column let-cell>
+  <div class="column">
+    <!-- <button class="add-column">+</button> -->
+    <div class="header">{{cell.content}}</div>
+  </div>
+</ng-template>
+
+
+<ng-template #block let-cell>
+  <div class="block">
+    {{cell.content}}
+    <!-- <div class="add-row">
+      <button>+</button>
+    </div> -->
+  </div>
+</ng-template>
+
+
+<ng-template #blockLast let-cell>
+  <div class="block">
+    {{cell.content}}
+
+    <div class="block-toolbar">
+      <button>1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>4</button>
+      <button>5</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #addRow let-cell>
+  <div class="add-row">
+    <button (click)="onAddRow(cell)">+</button>
+  </div>
+
+</ng-template>
+
+
+<ng-template #addColumn let-cell>
+  <div class="add-column">
+    <button (click)="onAddColumn(cell.colStart)">+</button>
+  </div>
+</ng-template>
+
+<!-- <ng-template #blockToolbar let-cell>
+  <div class="row">
+    <div class="block-toolbar">
+
+      <button>1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>4</button>
+      <button>5</button>
+    </div>
+
+  </div>
+
+</ng-template> -->

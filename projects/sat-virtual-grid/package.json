@@ -1,0 +1,26 @@
+{
+  "name": "sat-virtual-grid",
+  "version": "1.0.1",
+  "license": "MIT",
+  "description": "Библиотека виртуальных таблиц",
+  "homepage": "https://www.youtube.com/channel/UCGntVzOD7faGCYbrUfd8PQg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexanderZhelnin/SAT-Virtual-Grid"
+  },
+  "author": {
+    "name": "Александр Желнин",
+    "url": "https://www.youtube.com/channel/UCGntVzOD7faGCYbrUfd8PQg"
+  },
+  "keywords": [
+    "virtual",
+    "scroll"
+  ],
+  "peerDependencies": {
+    "@angular/common": "^14.0.0",
+    "@angular/core": "^14.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

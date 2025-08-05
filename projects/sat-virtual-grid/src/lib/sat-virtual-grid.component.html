@@ -1,0 +1,60 @@
+
+<div [style.height]="maxHeight + 'px'">
+  <div *ngIf="data as d" class="table" [style.grid-template-columns]="columns | columnsPipe">
+
+    <div class="start" [style.height]="(d.startHeight - d.addedSticky.height) + 'px'"> </div>
+
+    <div
+      [style.height]="d.addedSticky.height + 'px'"
+      [style.grid-row-start]="d.addedSticky.rowStart"
+      [style.grid-row-end]="d.addedSticky.rowStart">
+    </div>
+
+    <div class="end" [style.height]="d.endHeight + 'px'"></div>
+
+    <ng-container *ngFor="let cell of d.items; trackBy: trackById">
+      <ng-container *ngTemplateOutlet="gridCellTemplate; context: {$implicit: {cell, template: cell.template ??defaultTemplate }}"></ng-container>
+    </ng-container>
+
+
+    <div *ngIf="highlightIndex" class="highlight"
+      [style.grid-column-start]="1"
+      [style.grid-column-end]="columns.length + 1"
+      [style.grid-row-start]="highlightIndex"
+      [style.grid-row-end]="highlightIndex"></div>
+
+  </div>
+</div>
+
+<ng-template #defaultTemplate let-cell>
+  <div class="cell">
+    {{cell.content}}
+  </div>
+</ng-template>
+
+<ng-template #gridCellTemplate let-cell_t>
+  <div
+    [dynamicHeight]="cell_t.cell"
+    [root]="getThis"
+    class="cell"
+    [style.grid-column-start]="cell_t.cell.colStart ?? 1"
+    [style.grid-column-end]="(cell_t.cell.colStart ?? 1) + (cell_t.cell.colspan ?? 1) -1"
+    [style.grid-row-start]="cell_t.cell.rowStart ?? 1"
+    [style.grid-row-end]="(cell_t.cell.rowStart ?? 1) + (cell_t.cell.rowspan ?? 1) -1"
+    [style.background]="cell_t.cell.background ?? 'transparent'"
+    [style.z-index]="cell_t.cell.zIndex ?? 1"
+    [style.position]="cell_t.cell.position ?? 'static'"
+    [style.top]="cell_t.cell.top | topPipe"
+    [style.left]="cell_t.cell.left | topPipe"
+    [style.right]="cell_t.cell.right | topPipe"
+    [style.bottom]="cell_t.cell.bottom | topPipe"
+    [style.max-height]="cell_t.cell.maxHeight ? cell_t.cell.maxHeight + 'px' : 'unset'"
+    [style.visibility]="cell_t.cell.collapsed ? 'hidden' : 'visible'"
+
+    (click)="cell_t.cell.click?.(cell_t.cell)"
+    (dblclick)="cell_t.cell.dblclick?.(cell_t.cell)"
+    >
+    <ng-container *ngTemplateOutlet="cell_t.template; context: {$implicit: cell_t.cell}"></ng-container>
+</div>
+</ng-template>
+
