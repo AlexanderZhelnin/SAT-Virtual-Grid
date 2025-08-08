@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Inject, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { ICell, IColumn, IRow, ISource, SATVirtualGrigComponent } from 'sat-virtual-grid';
 
 // import { Show } from './animations';
@@ -32,12 +33,23 @@ export class AppComponent implements OnInit
 
   columns: IColumn[] = [
     { width: '17rem' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: '200px' },
+    { width: '0px' }, { width: 'minmax(1rem, 1fr)' },
+    { width: '0px' }, { width: '200px' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
     { width: '2rem' }];
 
   get columnsStr(): string { return this.columns.map(c => c.width).join(' '); }
+
+  source = {
+    grids: new BehaviorSubject([{
+      id: '0',
+      rows: new BehaviorSubject(this.items),
+      columns: new BehaviorSubject(this.columns)
+    }])
+  };
 
   constructor()
   {
@@ -56,7 +68,7 @@ export class AppComponent implements OnInit
           zIndex: this.zIndex++,
           top: 0,
           template: this.sectionTemplate,
-          click: (cell: ICell): void =>
+          click: (me: MouseEvent, cell: ICell): void =>
           {
             if (!cell.row) return;
             this.sc.onExpand(cell.row, !cell.row.isExpanded);
@@ -96,7 +108,7 @@ export class AppComponent implements OnInit
               position: 'sticky',
               top: 20,
               maxHeight: 21,
-              dblclick: (cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
+              dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
             } as ICell)),
           ...[...Array(3).keys()]
             .map(j => ({
@@ -107,7 +119,7 @@ export class AppComponent implements OnInit
               template: this.columnCollapsedTemplate,
               zIndex: 0,
               wenColumnCollapsed: true,
-              dblclick: (cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
+              dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
             } as ICell)),
 
           {
@@ -136,6 +148,8 @@ export class AppComponent implements OnInit
           this.generateAddRow(item),
           ...this.generateRowsBlock(99, item));
     }
+
+    this.source.grids.value[0].rows.next(this.items);
   }
 
   private generateRowsBlock(count: number, parent: IRow): IRow[]
@@ -206,7 +220,7 @@ export class AppComponent implements OnInit
 
   generateRow(cells: ICell[], parent: IRow | undefined = undefined): IRow
   {
-    const row: IRow = { cells, parent };
+    const row: IRow = { cells, parent, grid: this.source.grids.value[0] };
     cells.forEach(cell => cell.row = row);
 
     return row;
@@ -278,7 +292,7 @@ export class AppComponent implements OnInit
           position: 'sticky',
           top: 20,
           maxHeight: 21,
-          dblclick: (cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
+          dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
         } as ICell,
         {
           row: row.children?.[0],
@@ -289,7 +303,7 @@ export class AppComponent implements OnInit
           template: this.columnCollapsedTemplate,
           zIndex: 0,
           wenColumnCollapsed: true,
-          dblclick: (cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
+          dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
         } as ICell
       );
     })
@@ -297,6 +311,7 @@ export class AppComponent implements OnInit
     this.columns = [...this.columns];
     this.items = [...this.items];
 
+    this.source.grids.value[0].rows.next(this.items);
   }
 
   onAddRow(cell: ICell): void
@@ -314,6 +329,8 @@ export class AppComponent implements OnInit
 
 
     this.items = [...this.items];
+
+    this.source.grids.value[0].rows.next(this.items);
 
   }
 

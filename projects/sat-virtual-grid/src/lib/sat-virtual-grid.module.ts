@@ -1,10 +1,10 @@
-import { NgModule } from '@angular/core';
-import { SATVirtualGrigComponent } from './sat-virtual-grid.component';
-import { TopPipe } from './pipes/top.pipe';
-import { DynamicHeightDirective } from './dynamic-height.directive';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { NgScrollbarModule } from 'ngx-scrollbar';
+import { DynamicHeightDirective } from './dynamic-height.directive';
 import { ColumnsPipe } from './pipes/columns.pipe';
-
+import { TopPipe } from './pipes/top.pipe';
+import { SATVirtualGrigComponent } from './sat-virtual-grid.component';
 
 
 @NgModule({
@@ -12,10 +12,11 @@ import { ColumnsPipe } from './pipes/columns.pipe';
     SATVirtualGrigComponent,
     TopPipe,
     DynamicHeightDirective,
-      ColumnsPipe
-   ],
+    ColumnsPipe
+  ],
   imports: [
-    CommonModule
+    CommonModule,
+    NgScrollbarModule
   ],
   exports: [
     SATVirtualGrigComponent

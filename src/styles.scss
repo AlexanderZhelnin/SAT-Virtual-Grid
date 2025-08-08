@@ -8,4 +8,33 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+
+}
+
+scrollbar-y,
+scrollbar-x {
+  visibility: hidden;
+}
+
+// ng-scrollbar:hover scrollbar-y,
+// ng-scrollbar:hover scrollbar-x {
+//   visibility: inherit;
+// }
+
+ng-scrollbar {
+  --scrollbar-padding: 3px !important;
+  --scrollbar-size: 6px !important;
+  --scrollbar-border-radius: unset !important;
+
+  &:hover {
+
+    scrollbar-y,
+    scrollbar-x {
+      visibility: inherit;
+    }
+  }
+
+  .ng-scrollbar-thumb {
+    border-radius: 5px !important;
+  }
 }

@@ -1,20 +1,21 @@
-import { Directive, ElementRef, AfterViewInit, OnDestroy, Input, inject } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, OnDestroy, inject } from '@angular/core';
 import { ICell, IHeight } from './models';
 
-@Directive({
-  selector: '[dynamicHeight]'
-})
+
+/** Директива динамического определения высоты */
+// eslint-disable-next-line @angular-eslint/directive-selector
+@Directive({ selector: '[dynamicHeight]' })
 export class DynamicHeightDirective implements AfterViewInit, OnDestroy
 {
   @Input() dynamicHeight: ICell | undefined;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('root') r: IHeight | undefined;
 
   private resizeObserver: ResizeObserver | undefined;
   private elementRef = inject(ElementRef);
 
-  constructor() { }
-
-  ngAfterViewInit()
+  /** Жизненный цикл после построения представления */
+  ngAfterViewInit(): void
   {
     if (!this.dynamicHeight || (this.dynamicHeight.rowspan ?? 1) > 1) return;
 
@@ -22,19 +23,19 @@ export class DynamicHeightDirective implements AfterViewInit, OnDestroy
     {
       let isUpdate = false;
       for (const entry of entries)
-        if (this.dynamicHeight && entry.contentRect.height !== this.dynamicHeight.height)
+        if (this.dynamicHeight && entry.borderBoxSize[0].blockSize !== this.dynamicHeight.height)
         {
-          this.dynamicHeight.height = entry.contentRect.height;
+          this.dynamicHeight.height = entry.borderBoxSize[0].blockSize;
           isUpdate = true;
         }
 
-      //console.log(this.dynamicHeight!.height)
       if (isUpdate) this.r?.updateHeight$?.next();
     });
     this.resizeObserver.observe(this.elementRef.nativeElement);
   }
 
-  ngOnDestroy()
+  /** Жизненный цикл после уничтожения */
+  ngOnDestroy(): void
   {
     if (this.resizeObserver) this.resizeObserver.disconnect();
   }

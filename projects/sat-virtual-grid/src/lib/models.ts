@@ -1,5 +1,5 @@
-import { TemplateRef } from "@angular/core";
-import { Subject } from "rxjs";
+import { TemplateRef } from '@angular/core';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 
 export interface IId
@@ -14,6 +14,8 @@ export interface IRow
   children?: IRow[];
   isExpanded?: boolean;
   parent?: IRow;
+  grid: IGrid;
+  tag?: any;
 }
 
 export interface IColumn
@@ -26,6 +28,7 @@ export interface IColumn
 export interface ICell extends IId
 {
   row?: IRow;
+
   colspan?: number;
   rowspan?: number;
 
@@ -34,7 +37,7 @@ export interface ICell extends IId
 
   height?: number;
   maxHeight?: number;
-  background?: string
+  background?: string;
   zIndex?: number;
   position?: 'absolute' | 'fixed' | 'relative' | 'static' | 'inherit' | 'sticky' | 'unset' | 'revert' | 'revert-layer';
   top?: 'auto' | 'inherit' | number;
@@ -42,18 +45,20 @@ export interface ICell extends IId
   right?: 'auto' | 'inherit' | number;
   bottom?: 'auto' | 'inherit' | number;
 
-
   content?: any;
   template?: TemplateRef<any>;
 
   class?: string;
 
-  click?: (cell: ICell) => void;
-  dblclick?: (cell: ICell) => void;
+  click?: (me: MouseEvent, cell: ICell) => void;
+  dblclick?: (me: MouseEvent, cell: ICell) => void;
+  mouseover?: (me: MouseEvent, cell: ICell) => void;
+  mouseout?: (me: MouseEvent, cell: ICell) => void;
 
   canHide?: boolean;
   wenColumnCollapsed?: boolean;
   collapsed?: boolean;
+  tag?: any;
 }
 
 export interface IHeight
@@ -64,13 +69,13 @@ export interface IHeight
 export interface IGrid extends IId
 {
   /** Колонки */
-  columns: IColumn[];
+  columns: BehaviorSubject<IColumn[]>;
   /** Строки */
-  rows: IRow[];
+  rows: BehaviorSubject<IRow[]>;
 }
 
 export interface ISource
 {
-  /** Набор гридов */
-  grids: IGrid[];
+  /** Набор таблиц */
+  grids: BehaviorSubject<IGrid[]>;
 }

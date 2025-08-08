@@ -3,5 +3,9 @@
   "dest": "../../dist/sat-virtual-grid",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "allowedNonPeerDependencies": [
+    "@angular/cdk",
+    "ngx-scrollbar"
+  ]
 }
