@@ -3,18 +3,17 @@
 // }
 .table {
   display: grid;
-  // grid-template-columns: 200px 200px 200px 200px;
 }
 
-.start {
-  grid-row-start: 1;
-  grid-row-end: 1;
-}
+// .start {
+//   grid-row-start: 1;
+//   grid-row-end: 1;
+// }
 
-.end {
-  grid-row-start: 100000;
-  grid-row-end: 100000;
-}
+// .end {
+//   grid-row-start: 100000;
+//   grid-row-end: 100000;
+// }
 
 // .cell {
 //   //border: 1px solid black;

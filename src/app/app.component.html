@@ -1,6 +1,11 @@
 <button (click)="onScrollTo()"> sdg</button>
 
-<sat-virtual-grid #sc [source]="source" [buffer]="10"></sat-virtual-grid>
+<sat-virtual-grid #sc [source]="source" [buffer]="10"
+(loadedRows)="onLoadedRows($event)"
+(unLoadedRows)="onUnLoadedRows($event)"
+>
+
+</sat-virtual-grid>
 
 
 <ng-template #section let-cell>

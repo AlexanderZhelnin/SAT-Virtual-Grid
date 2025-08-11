@@ -4,6 +4,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 
 export interface IId
 {
+  /** Уникальный идентификатор */
   id: string;
 }
 

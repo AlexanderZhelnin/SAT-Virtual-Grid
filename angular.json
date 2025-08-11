@@ -1,5 +1,11 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
+  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -100,6 +106,15 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -130,6 +145,15 @@
             "main": "projects/sat-virtual-grid/src/test.ts",
             "tsConfig": "projects/sat-virtual-grid/tsconfig.spec.json",
             "karmaConfig": "projects/sat-virtual-grid/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/sat-virtual-grid/src/**/*.ts",
+              "projects/sat-virtual-grid/src/**/*.html"
+            ]
           }
         }
       }

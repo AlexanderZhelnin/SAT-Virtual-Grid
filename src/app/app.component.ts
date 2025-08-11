@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Inject, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { ICell, IColumn, IRow, ISource, SATVirtualGrigComponent } from 'sat-virtual-grid';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { ICell, IColumn, IGrid, IRow, ISource, SATVirtualGrigComponent } from 'sat-virtual-grid';
 
 // import { Show } from './animations';
 
@@ -27,7 +27,6 @@ export class AppComponent implements OnInit
 
   @ViewChild('sc') sc!: SATVirtualGrigComponent;
 
-  items: IRow[] = [];
   private id = 0;
   private zIndex = 100;
 
@@ -43,12 +42,16 @@ export class AppComponent implements OnInit
 
   get columnsStr(): string { return this.columns.map(c => c.width).join(' '); }
 
-  source = {
-    grids: new BehaviorSubject([{
-      id: '0',
-      rows: new BehaviorSubject(this.items),
-      columns: new BehaviorSubject(this.columns)
-    }])
+  source: ISource = {
+    grids: new BehaviorSubject<IGrid[]>(
+      [
+        //   {
+        //   id: '0',
+        //   rows: new BehaviorSubject(this.items),
+        //   columns: new BehaviorSubject(this.columns)
+        // }
+      ]
+    )
   };
 
   constructor()
@@ -60,6 +63,14 @@ export class AppComponent implements OnInit
   {
     for (let l = 0; l < 20; l++)
     {
+      const rows: IRow[] = [];
+
+      this.source.grids.value.push({
+        id: `${++this.id}`,
+        columns: new BehaviorSubject(this.columns),
+        rows: new BehaviorSubject(rows)
+      });
+
       const sectionRow = this.generateRow([
         {
           id: `${++this.id}`,
@@ -80,7 +91,7 @@ export class AppComponent implements OnInit
 
       sectionRow.children = [];
 
-      this.items.push(sectionRow);
+      rows.push(sectionRow);
 
       const item = sectionRow;
 
@@ -149,7 +160,21 @@ export class AppComponent implements OnInit
           ...this.generateRowsBlock(99, item));
     }
 
-    this.source.grids.value[0].rows.next(this.items);
+    //this.source.grids.value[0].rows.next(this.items);
+    this.source.grids.next(this.source.grids.value);
+  }
+
+
+  onUnLoadedRows(e: { cells: ICell[]; waiter?: Subject<void> | undefined; }): void
+  {
+    console.log('onUnLoadedRows', e.cells);
+    e.waiter?.next();
+  }
+  onLoadedRows(e: { cells: ICell[]; waiter?: Subject<void> | undefined; position?: "start" | "end" | "other" | undefined; }): void
+  {
+    console.log('onLoadedRows', e.cells);
+    e.waiter?.next();
+
   }
 
   private generateRowsBlock(count: number, parent: IRow): IRow[]
@@ -206,21 +231,11 @@ export class AppComponent implements OnInit
         position: 'relative',
         template: this.addRowTemplate
       }], parent);
-
-    // return this.generateRow([...Array((this.columns.length - 2) / 2).keys()]
-    //   .map(j => ({
-    //     id: `${++this.id}`,
-    //     height: 0,
-    //     zIndex: 2,
-    //     colStart: j * 2 + 3,
-    //     position: 'relative',
-    //     template: this.addRowTemplate
-    //   })), parent);
   }
 
   generateRow(cells: ICell[], parent: IRow | undefined = undefined): IRow
   {
-    const row: IRow = { cells, parent, grid: this.source.grids.value[0] };
+    const row: IRow = { cells, parent, grid: this.source.grids.value[this.source.grids.value.length - 1] };
     cells.forEach(cell => cell.row = row);
 
     return row;
@@ -266,52 +281,53 @@ export class AppComponent implements OnInit
 
     this.columns.splice(index - 1, 0, { width: '0px' }, { width: 'minmax(25rem, 1fr)' });
 
-    this.items.forEach(row =>
-    {
-      shift(row);
+    this.source.grids.value.forEach(grid =>
+      grid.rows.value.forEach(row =>
+      {
+        shift(row);
 
-      row.children?.[0].cells.push(
-        {
-          row: row.children?.[0],
-          id: `${++this.id}`,
-          colStart: index,
-          template: this.addColumnTemplate,
-          zIndex: 1000000,
-          position: 'sticky',
-          top: 20,
-        } as ICell,
-        {
-          row: row.children?.[0],
-          id: `${++this.id}`,
-          content: `safbagrbsertg`,
-          colStart: index + 1,
-          background: 'darkgrey',
-          template: this.columnTemplate,
-          zIndex: this.zIndex++,
-          canHide: false,
-          position: 'sticky',
-          top: 20,
-          maxHeight: 21,
-          dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
-        } as ICell,
-        {
-          row: row.children?.[0],
-          id: `${++this.id}`,
-          content: `safbagrbsertg`,
-          colStart: index + 1,
-          rowspan: 101 * 5 + 1,
-          template: this.columnCollapsedTemplate,
-          zIndex: 0,
-          wenColumnCollapsed: true,
-          dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
-        } as ICell
-      );
-    })
+        row.children?.[0].cells.push(
+          {
+            row: row.children?.[0],
+            id: `${++this.id}`,
+            colStart: index,
+            template: this.addColumnTemplate,
+            zIndex: 1000000,
+            position: 'sticky',
+            top: 20,
+          } as ICell,
+          {
+            row: row.children?.[0],
+            id: `${++this.id}`,
+            content: `safbagrbsertg`,
+            colStart: index + 1,
+            background: 'darkgrey',
+            template: this.columnTemplate,
+            zIndex: this.zIndex++,
+            canHide: false,
+            position: 'sticky',
+            top: 20,
+            maxHeight: 21,
+            dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
+          } as ICell,
+          {
+            row: row.children?.[0],
+            id: `${++this.id}`,
+            content: `safbagrbsertg`,
+            colStart: index + 1,
+            rowspan: 101 * 5 + 1,
+            template: this.columnCollapsedTemplate,
+            zIndex: 0,
+            wenColumnCollapsed: true,
+            dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn((cell.colStart ?? 1) - 1)
+          } as ICell
+        );
+      }));
 
     this.columns = [...this.columns];
-    this.items = [...this.items];
+    //this.items = [...this.items];
 
-    this.source.grids.value[0].rows.next(this.items);
+    this.source.grids.next(this.source.grids.value);
   }
 
   onAddRow(cell: ICell): void
@@ -328,9 +344,9 @@ export class AppComponent implements OnInit
     parent.children!.splice(index + 1, 0, ...addedRows);
 
 
-    this.items = [...this.items];
+    // this.items = [...this.items];
 
-    this.source.grids.value[0].rows.next(this.items);
+    this.source.grids.next(this.source.grids.value);
 
   }
 
