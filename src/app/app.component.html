@@ -1,9 +1,7 @@
 <button (click)="onScrollTo()"> sdg</button>
 
-<sat-virtual-grid #sc [source]="source" [buffer]="10"
-(loadedRows)="onLoadedRows($event)"
-(unLoadedRows)="onUnLoadedRows($event)"
->
+<sat-virtual-grid #sc [source]="source" [buffer]="{y:10, x: 2}" (loadedCells)="onLoadedCells($event)"
+  (unLoadedCells)="onUnLoadedCells($event)">
 
 </sat-virtual-grid>
 
@@ -43,9 +41,17 @@
 <ng-template #block let-cell>
   <div class="block">
     {{cell.content}}
-    <!-- <div class="add-row">
-      <button>+</button>
-    </div> -->
+  </div>
+</ng-template>
+
+<ng-template #number let-cell>
+  <div class="number">
+    {{cell.content}}
+  </div>
+</ng-template>
+
+<ng-template #block_stub let-cell>
+  <div [style.height]="cell.height + 'px'">
   </div>
 </ng-template>
 
@@ -74,7 +80,7 @@
 
 <ng-template #addColumn let-cell>
   <div class="add-column">
-    <button (click)="onAddColumn(cell.colStart)">+</button>
+    <button (click)="onAddColumn(cell.row.grid, cell.colStart)">+</button>
   </div>
 </ng-template>
 

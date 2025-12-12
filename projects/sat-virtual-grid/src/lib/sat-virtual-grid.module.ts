@@ -3,14 +3,14 @@ import { NgModule } from '@angular/core';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { DynamicHeightDirective } from './dynamic-height.directive';
 import { ColumnsPipe } from './pipes/columns.pipe';
-import { TopPipe } from './pipes/top.pipe';
+import { PxPipe } from './pipes/px.pipe';
 import { SATVirtualGrigComponent } from './sat-virtual-grid.component';
 
-
+/** Модуль */
 @NgModule({
   declarations: [
     SATVirtualGrigComponent,
-    TopPipe,
+    PxPipe,
     DynamicHeightDirective,
     ColumnsPipe
   ],

@@ -26,6 +26,8 @@ export class DynamicHeightDirective implements AfterViewInit, OnDestroy
         if (this.dynamicHeight && entry.borderBoxSize[0].blockSize !== this.dynamicHeight.height)
         {
           this.dynamicHeight.height = entry.borderBoxSize[0].blockSize;
+          if (this.dynamicHeight.linkedHeightCell)
+            this.dynamicHeight.linkedHeightCell.height = entry.borderBoxSize[0].blockSize;
           isUpdate = true;
         }
 

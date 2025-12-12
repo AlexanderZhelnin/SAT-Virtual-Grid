@@ -1,12 +1,12 @@
-import { ICell, IColumn, IId, IRow } from "./models";
+import { ICell, IColumn, IId, IRow } from './models';
 
 /** Интерфейс индексов */
 export interface IIndex
 {
-  /** Индекс начала */
-  startIndex: number;
-  /** Индекс конца */
-  endIndex: number;
+  /** Индекс начала строки */
+  startYIndex: number;
+  /** Индекс конца  строки */
+  endYIndex: number;
 }
 
 /** Отображаемая сетка */
@@ -16,10 +16,18 @@ export interface IDataGrid
   id: string;
   /** Отображаемые ячейки */
   items: ICell[];
+
+  /** Отображаемые ячейки */
+  itemsX?: ICell[];
   /** Колонки */
   columns: IColumn[];
   /** Добавляемый прикрепляемый элемент  */
   addedSticky: { rowStart: number; height: number };
+
+  /** Номер начальной и конечной строки */
+  index: IIndex;
+  /** Номер сетки в общем массиве */
+  gridIndex: number;
 }
 
 /** Интерфейс данных */
@@ -37,6 +45,7 @@ export interface IData
   endHeight: number;
 }
 
+/** Интерфейс плоского списка */
 export interface IGridFlat extends IId
 {
   /** Колонки */
