@@ -6,6 +6,7 @@ import { ColumnsPipe } from './pipes/columns.pipe';
 import { PxPipe } from './pipes/px.pipe';
 import { SATVirtualGrigComponent } from './sat-virtual-grid.component';
 
+
 /** Модуль */
 @NgModule({
   declarations: [

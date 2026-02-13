@@ -1,7 +1,11 @@
 <button (click)="onScrollTo()"> sdg</button>
 
-<sat-virtual-grid #sc [source]="source" [buffer]="{y:10, x: 2}" (loadedCells)="onLoadedCells($event)"
-  (unLoadedCells)="onUnLoadedCells($event)">
+<sat-virtual-grid
+  #sc [source]="source" [buffer]="{y:10, x: 2}"
+  (loadedCells)="onLoadedCells($event)"
+  (unLoadedCells)="onUnLoadedCells($event)"
+  (afterDraw)="onAfterDraw($event)"
+  >
 
 </sat-virtual-grid>
 

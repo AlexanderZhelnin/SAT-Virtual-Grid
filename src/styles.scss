@@ -38,3 +38,8 @@ ng-scrollbar {
     border-radius: 5px !important;
   }
 }
+
+.hidden{
+  opacity: 0;
+  pointer-events: none;
+}

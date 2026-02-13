@@ -1,6 +1,6 @@
 {
   "name": "sat-virtual-grid",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "license": "MIT",
   "description": "Библиотека виртуальных таблиц",
   "homepage": "https://www.youtube.com/channel/UCGntVzOD7faGCYbrUfd8PQg",
@@ -16,7 +16,11 @@
     "virtual",
     "scroll"
   ],
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@angular/common": ">=14.0.0 <21",
+    "@angular/core": ">=14.0.0 <21",
+    "ngx-scrollbar": ">=10.0.1"
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   }

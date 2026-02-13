@@ -17,6 +17,7 @@
           {{getCells(grid)}}
 
           <div *ngFor="let cell of grid.itemsX ?? [] ; trackBy: trackById"
+            [id]="cell.id"
             [dynamicHeight]="cell"
             [root]="getThis"
             [class]="cell.class || 'cell'"

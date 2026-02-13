@@ -68,6 +68,9 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   /** Событие выгрузки ячеек */
   @Output() unLoadedCells = new EventEmitter<{ cells: ICell[]; waiter?: Subject<void> }>();
 
+  /** Событие Отрисовки */
+  @Output() afterDraw = new EventEmitter<{ scrollTop: number; scrollLeft: number, cells: ICell[] }>();
+
   /** Плоский список строк */
   private _itemsFlat: IGridFlat[] = [];
 
@@ -103,7 +106,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
         this.height = entry.contentRect.height;
 
     this.update();
-    //this.cdr.detectChanges();
   });
 
   /** данные */
@@ -134,9 +136,14 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   protected get getThis(): IHeight { return this; }
 
   /** Позиция скроллинга по вертикали */
-  private scrollTop = 0;
+  private _scrollTop = 0;
+  /** @returns Позиция скроллинга по вертикали */
+  get scrollTop() { return this._scrollTop; }
+
   /** Позиция скроллинга по горизонтали  */
-  private scrollLeft = 0;
+  private _scrollLeft = 0;
+  /** @returns Позиция скроллинга по горизонтали */
+  get scrollLeft() { return this._scrollLeft; }
 
 
   /** Жизненный цикл */
@@ -158,8 +165,8 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.updateScroll$.pipe(debounceTime(50)).subscribe(position =>
     {
-      this.scrollTop = position.top;
-      this.scrollLeft = position.left;
+      this._scrollTop = position.top;
+      this._scrollLeft = position.left;
       const top = position.top;
 
       let h = 0;
@@ -211,13 +218,16 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     {
       this._oldData = this._data;
       this._data = this.calcData();
-      // const d = this.calcData();
       await this.diffData(this._oldData, this._data);
-      //this._data = d;
     }
 
-    // this._data = this.clearData;
     this.cdr.detectChanges();
+
+    this.afterDraw.next({
+      scrollTop: this.scrollTop,
+      scrollLeft: this.scrollLeft,
+      cells: [...this.data.grids.map(g => g.itemsX ?? []).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
+    });
   }
 
   /**
@@ -793,7 +803,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
           added.push(cell);
     }
     else
-      //added.push(...result, ...grid.items);
       added.push(...result);
 
     grid.itemsX = result;

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ICell, IColumn, IGrid, IRow, ISource, SATVirtualGrigComponent } from 'sat-virtual-grid';
 
@@ -29,6 +29,7 @@ export class AppComponent implements OnInit
 
 
   @ViewChild('sc') sc!: SATVirtualGrigComponent;
+  @ViewChild('sc', { read: ElementRef }) svg!: ElementRef<HTMLElement>;
 
   private id = 0;
   private rowIndex = 0;
@@ -92,7 +93,7 @@ export class AppComponent implements OnInit
       const rows: IRow[] = [];
 
       this.source.grids.value.push({
-        id: `${++this.id}`,
+        id: `_${++this.id}`,
         columns: new BehaviorSubject(this.columns.map(c => ({ ...c }))),
         rows: new BehaviorSubject(rows)
       });
@@ -100,7 +101,7 @@ export class AppComponent implements OnInit
 
       const sectionRow = this.generateRow([
         {
-          id: `${++this.id}`,
+          id: `_${++this.id}`,
           colspan: 1000,
           content: `Раздел ${this.source.grids.value.length}`,
           zIndex: this.zIndexSection++,
@@ -128,7 +129,7 @@ export class AppComponent implements OnInit
         this.generateRow([
 
           {
-            id: `${++this.id}`,
+            id: `_${++this.id}`,
             content: `№`,
             colStart: 2,
             background: 'darkgrey',
@@ -141,7 +142,7 @@ export class AppComponent implements OnInit
           } as ICell,
           ...[...Array((this.columns.length - 3) / 2).keys()]
             .map(j => ({
-              id: `${++this.id}`,
+              id: `_${++this.id}`,
               colStart: j * 2 + 3,
               template: this.addColumnTemplate,
               zIndex: 1000000,
@@ -151,7 +152,7 @@ export class AppComponent implements OnInit
 
           ...[...Array((this.columns.length - 3) / 2).keys()]
             .map(j => ({
-              id: `${++this.id}`,
+              id: `_${++this.id}`,
               content: `${j}-${l}`,
               colStart: j * 2 + 4,
               background: 'darkgrey',
@@ -165,7 +166,7 @@ export class AppComponent implements OnInit
             } as ICell)),
           ...[...Array((this.columns.length - 3) / 2).keys()]
             .map(j => ({
-              id: `${++this.id}`,
+              id: `_${++this.id}`,
               content: `${j}-${l}`,
               colStart: j * 2 + 4,
               rowspan: 200 * 5 + 1,
@@ -176,7 +177,7 @@ export class AppComponent implements OnInit
             } as ICell)),
 
           subSection = {
-            id: `${++this.id}`,
+            id: `_${++this.id}`,
             content: `Субраздел ${l} - ${0}`,
             colStart: 1,
             rowspan: 201,
@@ -193,7 +194,7 @@ export class AppComponent implements OnInit
         item.children!.push(
           this.generateRow([
             subSection = {
-              id: `${++this.id}`,
+              id: `_${++this.id}`,
               content: `Субраздел ${l} - ${i}`,
               colStart: 1,
               rowspan: 200,
@@ -216,12 +217,12 @@ export class AppComponent implements OnInit
 
   onUnLoadedCells(e: { cells: ICell[]; waiter?: Subject<void> | undefined; }): void
   {
-    console.log('onUnLoadedCells', e.cells);
+    // console.log('onUnLoadedCells', e.cells);
     setTimeout(() => e.waiter?.next(), 0);
   }
   onLoadedCells(e: { cells: ICell[]; waiter?: Subject<void> | undefined }): void
   {
-    console.log('onLoadedCells', e.cells);
+    // console.log('onLoadedCells', e.cells);
 
     if (e.cells.some(cell => cell.row === this.lastRow))
       this.loadGrids();
@@ -229,6 +230,42 @@ export class AppComponent implements OnInit
 
     setTimeout(() => e.waiter?.next(), 0);
   }
+
+  onAfterDraw(e: { scrollTop: number; scrollLeft: number; cells: ICell[]; })
+  {
+
+    //const svg = document.querySelector('#svg')!;
+    const cell = e.cells.find(cell => cell.content === 3)!;
+    const cellElement = document.querySelector(`#${cell?.id}`);
+    if (!cellElement) return;
+
+    const y = cellElement.getBoundingClientRect().y - this.svg.nativeElement.getBoundingClientRect().y;
+
+
+    const newClass = y <= 55 ? 'hidden' : undefined;
+    if (cell.class !== newClass)
+    {
+      cell.class = newClass;
+      this.sc.update();
+    }
+
+
+    //console.log(y);
+
+  }
+
+  groupBy<T>(xs: ICell[], predicate: (cell: ICell) => T): Map<T, ICell[]>
+  {
+    return xs.reduce((rv, cell) =>
+    {
+      const key = predicate(cell);
+      let mas = rv.get(key);
+      if (mas === undefined) rv.set(key, mas = []);
+
+      mas.push(cell);
+      return rv;
+    }, new Map<T, ICell[]>());
+  };
 
   private generateRowsBlock(count: number, parent: IRow, subSection: ICell): IRow[]
   {
@@ -247,7 +284,7 @@ export class AppComponent implements OnInit
 
     const collapsedCells: ICell[] = [...Array(count - 1).keys()]
       .map(j => ({
-        id: `${++this.id}`,
+        id: `_${++this.id}`,
         height: 40,
         colStart: j * 2 + 4,
         template: this.blockStubTemplate,
@@ -256,7 +293,7 @@ export class AppComponent implements OnInit
       }));
 
     collapsedCells.push({
-      id: `${++this.id}`,
+      id: `_${++this.id}`,
       height: 40,
       colStart: (count - 1) * 2 + 4,
       template: this.blockStubTemplate,
@@ -266,7 +303,7 @@ export class AppComponent implements OnInit
 
     return [
       {
-        id: `${++this.id}`,
+        id: `_${++this.id}`,
         height: 40,
         colStart: 2,
         content: ++this.rowIndex,
@@ -275,7 +312,7 @@ export class AppComponent implements OnInit
       ...collapsedCells,
       ...[...Array(count - 1).keys()]
         .map(j => ({
-          id: `${++this.id}`,
+          id: `_${++this.id}`,
           height: 40,
           colStart: j * 2 + 4,
           content: this.generateRandomString(),
@@ -283,7 +320,7 @@ export class AppComponent implements OnInit
           linkedHeightCell: collapsedCells[j]
         })),
       {
-        id: `${++this.id}`,
+        id: `_${++this.id}`,
         height: 40,
         colStart: (count - 1) * 2 + 4,
         content: this.generateRandomString(),
@@ -299,7 +336,7 @@ export class AppComponent implements OnInit
     return this.generateRow([
 
       {
-        id: `${++this.id}`,
+        id: `_${++this.id}`,
         height: 0,
         zIndex: 2,
         colStart: 1,//this.columns.length - 1,
