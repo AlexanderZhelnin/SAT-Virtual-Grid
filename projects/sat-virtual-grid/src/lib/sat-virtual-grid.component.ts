@@ -163,8 +163,17 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       this.update();
     });
 
+    let lastUpdateScroll = 0;
+    let lastPositionTop = -1;
+
     this.updateScroll$.pipe(debounceTime(50)).subscribe(position =>
     {
+      const dTime = new Date().getTime();
+      if (dTime - lastUpdateScroll < 200 && lastPositionTop === position.top) return;
+
+      lastUpdateScroll = dTime;
+      lastPositionTop = this._scrollTop;
+
       this._scrollTop = position.top;
       this._scrollLeft = position.left;
       const top = position.top;
