@@ -19,15 +19,14 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   /** Скроллинг */
   @ViewChild('sc', { static: true }) sc!: NgScrollbar;
 
-  /** Скроллинг */
-  // @ViewChild('scContent', { static: true }) scContent!: ElementRef;
-
   /** Обнаружение изменений */
   readonly cdr = inject(ChangeDetectorRef);
   /** Компонент */
   private readonly elementRef = inject(ElementRef);
 
+  /** Событие перерасчёта элементов */
   private refreshItems$ = new Subject<void>();
+  /** Событие обновления */
   private refresh$ = new Subject<void>();
 
   private subs: Subscription[] = [];
@@ -164,15 +163,21 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     });
 
     let lastUpdateScroll = 0;
-    let lastPositionTop = -1;
+    let lastPositionTop: number[] = [];
 
     this.updateScroll$.pipe(debounceTime(50)).subscribe(position =>
     {
       const dTime = new Date().getTime();
-      if (dTime - lastUpdateScroll < 200 && lastPositionTop === position.top) return;
+      if (dTime - lastUpdateScroll > 200)
+      {
+        lastUpdateScroll = 0;
+        lastPositionTop.length = 0;
+      }
+      else if (lastPositionTop.some(pTop => Math.abs(pTop - position.top) < 2)) return;
 
       lastUpdateScroll = dTime;
-      lastPositionTop = this._scrollTop;
+      lastPositionTop.push(this._scrollTop);
+      if (lastPositionTop.length > 4) lastPositionTop.shift();
 
       this._scrollTop = position.top;
       this._scrollLeft = position.left;
@@ -393,7 +398,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
 
     let firstStickyCell: ICell | undefined;
     let firstStickyIndex = 0;
-    let stickyHeight = 0;
+    // let stickyHeight = 0;
 
 
     //#region Прикреплённые ячейки
@@ -424,7 +429,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
               firstStickyIndex = ri;
             }
           });
-          stickyHeight += row.height ?? 20;
+          // stickyHeight += row.height ?? 20;
         }
 
         row.cells.forEach(cell =>

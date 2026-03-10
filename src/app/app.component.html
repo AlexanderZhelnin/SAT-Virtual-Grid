@@ -1,25 +1,24 @@
-<button (click)="onScrollTo()"> sdg</button>
+<button (click)="onScrollTo()">sdg</button>
 
 <sat-virtual-grid
-  #sc [source]="source" [buffer]="{y:10, x: 2}"
+  #sc
+  [source]="source"
+  [buffer]="{ y: 10, x: 2 }"
   (loadedCells)="onLoadedCells($event)"
   (unLoadedCells)="onUnLoadedCells($event)"
   (afterDraw)="onAfterDraw($event)"
-  >
-
+>
 </sat-virtual-grid>
-
 
 <ng-template #section let-cell>
   <div class="section">
-    <div class="header">{{cell.content}}</div>
+    <div class="header">{{ cell.content }}</div>
   </div>
 </ng-template>
 
-
 <ng-template #subSection let-cell>
   <div class="subSection" [class]="cell.class">
-    <div class="header">{{cell.content}}</div>
+    <div class="header">{{ cell.content }}</div>
   </div>
 </ng-template>
 
@@ -27,42 +26,40 @@
   <div class="column-collapsed">
     <div class="header">
       <div>
-        {{cell.content}}
+        {{ cell.content }}
       </div>
     </div>
   </div>
 </ng-template>
 
-
 <ng-template #column let-cell>
   <div class="column">
     <!-- <button class="add-column">+</button> -->
-    <div class="header">{{cell.content}}</div>
+    <div class="header">{{ cell.content }}</div>
   </div>
 </ng-template>
 
-
 <ng-template #block let-cell>
-  <div class="block">
-    {{cell.content}}
+  <div class="block" contenteditable="true" 
+    (input)="onChangedCell(cell, $event)"
+    (blur)="onCellLostFocus(cell)">
+    {{ cell.content }}
   </div>
 </ng-template>
 
 <ng-template #number let-cell>
   <div class="number">
-    {{cell.content}}
+    {{ cell.content }}
   </div>
 </ng-template>
 
 <ng-template #block_stub let-cell>
-  <div [style.height]="cell.height + 'px'">
-  </div>
+  <div [style.height]="cell.height + 'px'"></div>
 </ng-template>
-
 
 <ng-template #blockLast let-cell>
   <div class="block">
-    {{cell.content}}
+    {{ cell.content }}
 
     <div class="block-toolbar">
       <button>1</button>
@@ -78,9 +75,7 @@
   <div class="add-row">
     <button (click)="onAddRow(cell)">+</button>
   </div>
-
 </ng-template>
-
 
 <ng-template #addColumn let-cell>
   <div class="add-column">

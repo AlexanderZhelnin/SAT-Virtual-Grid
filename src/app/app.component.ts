@@ -3,6 +3,61 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { ICell, IColumn, IGrid, IRow, ISource, SATVirtualGrigComponent } from 'sat-virtual-grid';
 
 // import { Show } from './animations';
+/**
+ * Получить текущую позицию курсора
+ * @param context узел html
+ * @returns позиция
+ */
+function getCursorPosition(context: Node): number
+{
+  const selection = window.getSelection();
+  if (!selection) return 0;
+  const range = selection.getRangeAt(0);
+  range.setStart(context, 0);
+
+  return range.toString().length;
+}
+
+/**
+ * Установить позицию курсора
+ * @param context узел html
+ * @param len позиция
+ */
+function setCursorPosition(context: Node, len: number): void
+{
+  const selection = window.getSelection();
+  const pos = getTextNodeAtPosition(context, len);
+  selection?.removeAllRanges();
+  const r = new Range();
+  r.setStart(pos.node, pos.position);
+  selection?.addRange(r);
+}
+
+/**
+ * Получить позицию узла
+ *
+ * @param root Корневой узел
+ * @param index Индекс
+ * @returns Позиция
+ */
+function getTextNodeAtPosition(root: Node, index: number): { /** Узел */node: Node; /** Позиция */position: number }
+{
+  const treeWalker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT,
+    {
+      acceptNode: (elem: Node): number =>
+      {
+        const l = elem?.textContent?.length ?? 0;
+        if (index > l)
+        {
+          index -= l;
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+  return { node: treeWalker.nextNode() ?? root, position: index };
+}
 
 
 @Component({
@@ -44,31 +99,32 @@ export class AppComponent implements OnInit
     { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
     { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
     { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
 
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
-    { width: '2rem' }];
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    // { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '2rem' }
+  ];
 
   // get columnsStr(): string { return this.columns.map(c => c.width).join(' '); }
 
@@ -528,6 +584,27 @@ export class AppComponent implements OnInit
     parent.children!.splice(index + 1, 0, ...addedRows);
 
     this.source.grids.next(this.source.grids.value);
+  }
+
+  /** Потеря фокуса на ячейке */
+  onCellLostFocus(cell: ICell): void
+  {
+
+  }
+
+  onChangedCell(cell: ICell, e: Event): void
+  {
+    cell.row!.height = 0;
+    cell.row?.cells.forEach(c => c.height = 0);
+    const pos = getCursorPosition(e.target as Node);
+    cell.content = (e.target as any).textContent;
+
+    setTimeout(() => 
+    {
+      setCursorPosition(e.target as Node, pos + 1);
+      this.sc.update();
+    });
+
   }
 
 }

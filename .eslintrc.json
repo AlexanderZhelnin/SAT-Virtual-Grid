@@ -116,7 +116,7 @@
         "@typescript-eslint/no-inferrable-types": "error",
         "@typescript-eslint/no-invalid-void-type": "off",
         "@typescript-eslint/no-this-alias": "error",
-        "@typescript-eslint/no-unnecessary-type-assertion": "error",
+        "@typescript-eslint/no-unnecessary-type-assertion": "warn",
         "@typescript-eslint/no-unnecessary-type-constraint": "error",
         "@typescript-eslint/no-unsafe-declaration-merging": "error",
         "@typescript-eslint/prefer-enum-initializers": "error",
@@ -135,8 +135,15 @@
               "FunctionDeclaration": true,
               "MethodDefinition": true,
               "ClassDeclaration": true,
-              "FunctionExpression": true
-            }
+              "ClassExpression": true
+            },
+            "contexts": [
+              "PropertyDefinition",
+              "TSInterfaceDeclaration",
+              "TSTypeAliasDeclaration",
+              "TSEnumDeclaration",
+              "TSPropertySignature"
+            ]
           }
         ],
         "jsdoc/newline-after-description": "off"
@@ -145,6 +152,14 @@
         "jsdoc": {
           "mode": "typescript"
         }
+      }
+    },
+    {
+      "files": [
+        "*.js"
+      ],
+      "rules": {
+        "curly": "off"
       }
     },
     {
