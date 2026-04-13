@@ -1,0 +1,30 @@
+:host {
+  &::before {
+    font-family: "Font Awesome 5 Free", Monospace;
+    font-variant: normal;
+    font-style: normal;
+    font-weight: 900;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: auto;
+    text-align: center;
+    text-indent: 0;
+
+    position: relative;
+    color: #fff;
+    text-shadow: 0 1px 1px #111;
+    background: var(--secondary-color-80, #aaa);
+    content: "\f121";
+    font-size: 0.53rem;
+    line-height: 1rem;
+    top: -2px;
+    padding: 3px 2px;
+    border-radius: 2px;
+  }
+  // border: 1px solid #aaa;
+  // background-color: lightcoral;
+  text-decoration: underline;
+  color: blue;
+  background-color: rgb(240,240,240);
+  outline: none;
+  cursor: pointer;
+}

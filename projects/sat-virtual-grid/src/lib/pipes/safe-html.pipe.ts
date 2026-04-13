@@ -1,0 +1,19 @@
+import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
+/** SafeHtmlPipe */
+@Pipe({ name: 'safeHtml' })
+export class SafeHtmlPipe implements PipeTransform
+{
+    constructor(private readonly sanitizer: DomSanitizer) { }
+
+    /**
+     * Обработка входящего html
+     * @param html Строка с html
+     * @returns SafeHtml
+     */
+    transform(html: string): SafeHtml
+    {
+        return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
+}

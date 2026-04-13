@@ -1,30 +1,42 @@
 <ng-scrollbar #sc track="all">
 
-    <div [style.height]="maxHeight + 'px'">
+    <div [style.height.px]="maxHeight">
 
       <ng-container *ngIf="data as d">
-        <!-- <div class="start" [style.height]="(d.startHeight - d.addedSticky.height) + 'px'"> </div> -->
-        <div class="start" [style.height]="d.startHeight + 'px'"> </div>
 
-        <div *ngFor="let grid of d.grids; trackBy: trackById" class="table" [id]="'sat-virtual-grid-' + grid.id" [style.grid-template-columns]="grid.columns | columnsPipe">
+        <div class="start" [style.height.px]="d.startHeight"> </div>
+
+        <div *ngFor="let grid of d.grids; trackBy: trackById"
+          [id]="'sat-virtual-grid-' + grid.id"
+          [style.grid-template-columns]="grid.columns | columnsPipe"
+          class="table">
+
+          <div *ngFor="let column of grid.columns; let i = index; trackBy: trackByIndex"
+            class="column-width"  
+            [column]="column"
+            [columns]="grid.columns"
+            [root]="getThis"
+            [style.grid-column-start]="i + 1"
+            dynamicWidth>
+          </div>
 
           <div *ngIf="grid.addedSticky.height"
-            [style.height]="grid.addedSticky.height + 'px'"
+            [style.height.px]="grid.addedSticky.height"
             [style.grid-row-start]="grid.addedSticky.rowStart"
             [style.grid-row-end]="grid.addedSticky.rowStart">
           </div>
 
           {{getCells(grid)}}
-
-          <div *ngFor="let cell of grid.itemsX ?? [] ; trackBy: trackById"
+       
+          <div *ngFor="let cell of grid.itemsX | async; trackBy: trackById"
             [id]="cell.id"
             [dynamicHeight]="cell"
             [root]="getThis"
             [class]="cell.class || 'cell'"
             [style.grid-column-start]="cell.colStart ?? 1"
-            [style.grid-column-end]="(cell.colStart ?? 1) + (cell.colspan ?? 1) -1"
+            [style.grid-column-end]="(cell.colStart ?? 1) + (cell.colspan ?? 1) - 1"
             [style.grid-row-start]="cell.rowStart ?? 1"
-            [style.grid-row-end]="(cell.rowStart ?? 1) + (cell.rowspan ?? 1) -1"
+            [style.grid-row-end]="(cell.rowStart ?? 1) + (cell.rowspan ?? 1) - 1"
             [style.background]="cell.background ?? 'transparent'"
             [style.z-index]="cell.zIndex ?? 1"
             [style.position]="cell.position ?? 'static'"
@@ -34,7 +46,7 @@
             [style.bottom]="cell.bottom | pxPipe"
             [style.max-height]="cell.maxHeight ? cell.maxHeight + 'px' : 'unset'"
             [style.visibility]="cell.collapsed ? 'hidden' : 'visible'"
-            [style.min-height]="cell.row?.height + 'px'"
+            [style.min-height.px]="cell.row?.height"
             (click)="cell.click?.($event, cell)"
             (dblclick)="cell.dblclick?.($event, cell)"
             (mouseover)="cell.mouseover?.($event, cell)"
@@ -48,9 +60,9 @@
             [root]="getThis"
             [class]="cell.class || 'cell'"
             [style.grid-column-start]="cell.colStart ?? 1"
-            [style.grid-column-end]="(cell.colStart ?? 1) + (cell.colspan ?? 1) -1"
+            [style.grid-column-end]="(cell.colStart ?? 1) + (cell.colspan ?? 1) - 1"
             [style.grid-row-start]="cell.rowStart ?? 1"
-            [style.grid-row-end]="(cell.rowStart ?? 1) + (cell.rowspan ?? 1) -1"
+            [style.grid-row-end]="(cell.rowStart ?? 1) + (cell.rowspan ?? 1) - 1"
             [style.background]="cell.background ?? 'transparent'"
             [style.z-index]="cell.zIndex ?? 1"
             [style.position]="cell.position ?? 'static'"
@@ -66,25 +78,17 @@
             (mouseout)="cell.mouseout?.($event, cell)"
             >
             <ng-container *ngTemplateOutlet="cell.template ?? defaultTemplate; context: {$implicit: cell}"></ng-container>
+
           </div>
 
-          <!-- <div *ngIf="highlightIndex" class="highlight"
-            [style.grid-column-start]="1"
-            [style.grid-column-end]="1000"
-            [style.grid-row-start]="highlightIndex"
-            [style.grid-row-end]="highlightIndex"></div> -->
-
         </div>
-        <div class="end" [style.height]="d.endHeight + 'px'"></div>
+        <div class="end" [style.height.px]="d.endHeight"></div>
       </ng-container>
-
-
+      
     </div>
 
 </ng-scrollbar>
 
 <ng-template #defaultTemplate let-cell>
-  <div class="cell">
-    {{cell.content}}
-  </div>
+  <div class="cell" [innerHTML]="cell.content | safeHtml"></div>
 </ng-template>

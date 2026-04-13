@@ -1,9 +1,11 @@
-<button (click)="onScrollTo()">sdg</button>
+<!-- <button (click)="onScrollTo()">sdg</button> -->
+<p> Строк: {{rowsCount}} </p>
+<p> Колонок: {{columns.length}} </p> 
 
 <sat-virtual-grid
   #sc
   [source]="source"
-  [buffer]="{ y: 10, x: 2 }"
+  [buffer]="{ y: 5, x: 1 }"
   (loadedCells)="onLoadedCells($event)"
   (unLoadedCells)="onUnLoadedCells($event)"
   (afterDraw)="onAfterDraw($event)"
@@ -25,25 +27,28 @@
 <ng-template #columnCollapsed let-cell>
   <div class="column-collapsed">
     <div class="header">
-      <div>
-        {{ cell.content }}
-      </div>
+      <div> {{ cell.content }} </div>
     </div>
   </div>
 </ng-template>
 
 <ng-template #column let-cell>
   <div class="column">
-    <!-- <button class="add-column">+</button> -->
     <div class="header">{{ cell.content }}</div>
-  </div>
+    <div class="column-resizer"
+      [style.left.px]="getColumn(cell).widthInPx"
+      (mousedown)="onColumnResizeMousedown($event, cell)" ></div>
+  </div>  
 </ng-template>
 
 <ng-template #block let-cell>
-  <div class="block" contenteditable="true" 
-    (input)="onChangedCell(cell, $event)"
-    (blur)="onCellLostFocus(cell)">
-    {{ cell.content }}
+  <div class="block_root">
+    <div
+      class="block"
+      contenteditable="true"
+      (blur)="onCellLostFocus(cell, $event)"
+      [innerHTML]="cell.content | safehtml"
+    ></div>
   </div>
 </ng-template>
 
@@ -58,8 +63,8 @@
 </ng-template>
 
 <ng-template #blockLast let-cell>
-  <div class="block">
-    {{ cell.content }}
+  <div class="block_root">
+    <div class="block" [innerHTML]="cell.content | safehtml"></div>
 
     <div class="block-toolbar">
       <button>1</button>
@@ -82,18 +87,3 @@
     <button (click)="onAddColumn(cell.row.grid, cell.colStart)">+</button>
   </div>
 </ng-template>
-
-<!-- <ng-template #blockToolbar let-cell>
-  <div class="row">
-    <div class="block-toolbar">
-
-      <button>1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>4</button>
-      <button>5</button>
-    </div>
-
-  </div>
-
-</ng-template> -->

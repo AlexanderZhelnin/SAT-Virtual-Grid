@@ -4,7 +4,6 @@
   width: calc(100% - 50px);
   height: calc(100% - 50px);
   overflow: hidden;
-
 }
 
 sat-virtual-grid {
@@ -17,7 +16,7 @@ sat-virtual-grid {
 }
 
 .section {
-  background-color: red;
+  background-color: lightcoral;
   border: 1px solid black;
 
   .header {
@@ -29,13 +28,12 @@ sat-virtual-grid {
 
 .subSection {
   border: 1px solid black;
-  background-color: blue;
+  background-color: lightblue;
   //height: calc(100% + 20px);
   height: 100%;
   margin-top: 0px;
 
   .header {
-
     position: sticky;
     top: 23px;
     padding-left: 0.3rem;
@@ -61,22 +59,28 @@ sat-virtual-grid {
 
 .column {
   border: 1px solid black;
+  display: flex;
 
   .header {
     padding-left: 0.3rem;
     margin: auto;
   }
+  .column-resizer {
+    // background-color: red;
+    width: 5px;
+    height: 20px;
+    cursor: e-resize;
+  }
 }
 
 .add-row {
   position: sticky;
-  left: 50%;//calc(50% + 17rem);
+  left: 50%; //calc(50% + 17rem);
   transform: (-50%);
 
   margin-top: -12px;
   margin-bottom: -12px;
   width: 250px;
-
 
   button {
     margin-left: calc(50% - 12px);
@@ -86,16 +90,15 @@ sat-virtual-grid {
 
   &:hover {
     button {
-
       opacity: 1;
-
     }
-
   }
 }
 
 .add-column {
-  position: sticky;
+  // position: sticky;
+  // top: 20px;
+  position: absolute;
   top: 20px;
   margin-left: -12px;
   height: 100%;
@@ -121,13 +124,58 @@ sat-virtual-grid {
   align-content: center;
   text-align: center;
   justify-content: center;
+  background-color: white;
 }
 
 .block {
-  border: 1px solid black;
   position: relative;
   word-wrap: break-word;
   height: 100%;
+  margin: 5px;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  // .block-toolbar {
+  //   display: flex;
+
+  //   padding-left: 0.3rem;
+  //   padding-right: 0.3rem;
+  //   padding-top: 1rem;
+  //   padding-bottom: 1rem;
+
+  //   // display: none;
+  //   visibility: hidden;
+  //   opacity: 0;
+
+  //   transition: 0.3s;
+  //   // display: flex;
+  //   flex-direction: column;
+  //   transition: 0.3s;
+  //   width: 1.4rem;
+  //   position: absolute;
+  //   right: -2rem;
+  //   top: -1rem;
+  //   z-index: 10000000;
+
+  //   transition: visibility 1s opacity .3s ease;
+  // }
+
+  // &:hover {
+  //   .block-toolbar {
+  //     visibility: visible;
+  //     opacity: 1;
+  //   }
+  // }
+}
+
+.block_root {
+  border: 1px solid black;
+  //padding: 5px;
+  position: relative;
+  height: 100%;
+  background-color: white;
 
   .block-toolbar {
     display: flex;
@@ -151,7 +199,7 @@ sat-virtual-grid {
     top: -1rem;
     z-index: 10000000;
 
-    transition: visibility 1s opacity .3s ease;
+    transition: visibility 1s opacity 0.3s ease;
   }
 
   &:hover {
@@ -165,55 +213,3 @@ sat-virtual-grid {
 .hide {
   display: none;
 }
-
-
-// .row {
-//   height: 100%;
-//   direction: rtl;
-//   position: relative;
-
-
-//   .block-toolbar {
-//     display: flex;
-//     flex-direction: column;
-//     opacity: 0;
-//     transition: 0.3s;
-//     width: 1.4rem;
-//     position: absolute;
-//     //position: sticky;
-//     right: 0.3rem;
-//     top: 0;
-//     z-index: 10000000;
-//   }
-
-//   &:hover {
-//     .block-toolbar {
-//       opacity: 1;
-//     }
-//   }
-
-//   // .buttons {
-//   //   display: flex;
-//   //   flex-direction: column;
-//   //   position: absolute;
-//   //   top: 0;
-//   // }
-
-
-// }
-
-
-
-// ::ng-deep sat-virtual-scroll-content {
-//   .hidden {
-//     display: none;
-//   }
-
-//   // .subSection {
-//   //   &.first-sub-section {
-//   //     height: calc(100% + 20px);
-//   //     margin-top: -21px;
-
-//   //   }
-//   // }
-// }

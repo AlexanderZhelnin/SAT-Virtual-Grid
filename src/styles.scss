@@ -8,18 +8,15 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-
 }
 
 scrollbar-y,
 scrollbar-x {
   visibility: hidden;
+  --scrollbar-thumb-color: rgba(0, 0, 0, 0.3);
+  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.5);
+  --scrollbar-size: 10px;
 }
-
-// ng-scrollbar:hover scrollbar-y,
-// ng-scrollbar:hover scrollbar-x {
-//   visibility: inherit;
-// }
 
 ng-scrollbar {
   --scrollbar-padding: 3px !important;
@@ -27,7 +24,6 @@ ng-scrollbar {
   --scrollbar-border-radius: unset !important;
 
   &:hover {
-
     scrollbar-y,
     scrollbar-x {
       visibility: inherit;
@@ -39,7 +35,7 @@ ng-scrollbar {
   }
 }
 
-.hidden{
+.hidden {
   opacity: 0;
   pointer-events: none;
 }

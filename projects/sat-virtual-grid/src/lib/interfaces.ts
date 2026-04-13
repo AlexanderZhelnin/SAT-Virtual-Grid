@@ -1,3 +1,4 @@
+import { BehaviorSubject } from 'rxjs';
 import { ICell, IColumn, IId, IRow } from './models';
 
 /** Интерфейс индексов */
@@ -18,7 +19,7 @@ export interface IDataGrid
   items: ICell[];
 
   /** Отображаемые ячейки */
-  itemsX?: ICell[];
+  itemsX: BehaviorSubject<ICell[]>;
   /** Колонки */
   columns: IColumn[];
   /** Добавляемый прикрепляемый элемент  */

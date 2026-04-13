@@ -35,6 +35,8 @@ export interface IColumn
   id?: string;
   /** Ширина колонки */
   width: string;
+  /** Размер колонки в пикселях */
+  widthInPx?: number;
   /** Флаг колонка свёрнута */
   collapsed?: boolean;
   /** Шаблон для свёрнутой колонки */
@@ -111,6 +113,13 @@ export interface IHeight
 {
   /** Событие обновление высоты */
   updateHeight$: Subject<void>;
+}
+
+/** Интерфейс изменения высоты */
+export interface IUpdate
+{
+  /** Событие обновление высоты */
+  update(): void;
 }
 
 /** Интерфейс сетка */
