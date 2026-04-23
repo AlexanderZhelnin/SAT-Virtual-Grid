@@ -5,13 +5,13 @@ import { loremIpsum } from 'lorem-ipsum';
 
 /** Тестовый компонент */
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
-    // animations: [Show]
-    ,
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+  // animations: [Show]
+  ,
+  standalone: false
 })
 export class AppComponent implements OnInit
 {
@@ -688,8 +688,8 @@ export class AppComponent implements OnInit
       .filter(cell => cell.template === this.blockTemplate)
       .forEach(cell =>
       {
-        cell.height = 40;
-        cell.row!.height = 40;
+        cell.height = 100;
+        cell.row!.height = 100;
       });
 
     this.vg.update();
