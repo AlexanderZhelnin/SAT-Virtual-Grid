@@ -75,10 +75,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "virtual-grid:build:production"
+              "buildTarget": "virtual-grid:build:production"
             },
             "development": {
-              "browserTarget": "virtual-grid:build:development"
+              "buildTarget": "virtual-grid:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -86,7 +86,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "virtual-grid:build"
+            "buildTarget": "virtual-grid:build"
           }
         },
         "test": {
