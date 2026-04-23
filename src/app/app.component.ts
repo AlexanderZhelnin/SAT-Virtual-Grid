@@ -15,9 +15,6 @@ import { loremIpsum } from 'lorem-ipsum';
 })
 export class AppComponent implements OnInit
 {
-  stestH1 = 41;
-  stestH2 = 1000;
-  @ViewChild('stest', { static: true }) stest!: ElementRef<any>;
   /** Обнаружение изменений */
   readonly cdr = inject(ChangeDetectorRef);
 

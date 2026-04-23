@@ -1,5 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { ICell, IColumn, IId, IRow } from './models';
+import { signal, WritableSignal } from '@angular/core';
 
 /** Интерфейс индексов */
 export interface IIndex
@@ -19,7 +20,7 @@ export interface IDataGrid
   items: ICell[];
 
   /** Отображаемые ячейки */
-  itemsX: BehaviorSubject<ICell[]>;
+  itemsX: WritableSignal<ICell[]>;
 
   /** Колонки */
   columns: IColumn[];

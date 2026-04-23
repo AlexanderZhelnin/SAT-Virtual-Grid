@@ -2,12 +2,12 @@
 
   <div #root [style.height.px]="maxHeight">
     <div #start class="start" [style.height.px]="data.startHeight"> </div>
-    @for (grid of data.grids; track trackById($index, grid)) {
+    @for (grid of (data.grids ?? []); track trackById($index, grid)) {
       <div
         [id]="'sat-virtual-grid-' + grid.id"
         [style.grid-template-columns]="grid.columns | columnsPipe"
         class="table">
-        @for (column of grid.columns; track trackByIndex(i, column); let i = $index) {
+        @for (column of (grid.columns ?? []); track trackByIndex(i, column); let i = $index) {
           <div
             class="column-width"
             [column]="column"
@@ -24,8 +24,10 @@
             [style.grid-row-end]="grid.addedSticky.rowStart">
           </div>
         }
+
         {{getCells(grid)}}
-        @for (cell of grid.itemsX | async; track trackById($index, cell)) {
+        
+        @for (cell of grid.itemsX(); track trackById($index, cell)) {
           <div
             [id]="cell.id"
             [dynamicHeight]="cell"
@@ -51,9 +53,10 @@
             (mouseout)="cell.mouseout?.($event, cell)"
             >
             <ng-container *ngTemplateOutlet="cell.template ?? defaultTemplate; context: {$implicit: cell}"></ng-container>
+             
           </div>
         }
-        @for (cell of grid.items; track trackById($index, cell)) {
+        @for (cell of (grid.items ?? []); track trackById($index, cell)) {
           <div
             [dynamicHeight]="cell"
             [root]="getThis"
@@ -75,8 +78,11 @@
             (dblclick)="cell.dblclick?.($event, cell)"
             (mouseover)="cell.mouseover?.($event, cell)"
             (mouseout)="cell.mouseout?.($event, cell)"
+            
             >
+            
             <ng-container *ngTemplateOutlet="cell.template ?? defaultTemplate; context: {$implicit: cell}"></ng-container>
+             
           </div>
         }
       </div>
@@ -89,3 +95,4 @@
 <ng-template #defaultTemplate let-cell>
   <div class="cell" [innerHTML]="cell.content | safeHtml"></div>
 </ng-template>
+
