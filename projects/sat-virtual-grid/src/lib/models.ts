@@ -1,4 +1,4 @@
-import { TemplateRef } from '@angular/core';
+import { EventEmitter, TemplateRef } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 
@@ -113,6 +113,8 @@ export interface IHeight
 {
   /** Событие обновление высоты */
   updateHeight$: Subject<void>;
+  /** Событие изменения размера ячейки */
+  resizeCell: EventEmitter<ICell>;
 }
 
 /** Интерфейс изменения высоты */
@@ -136,4 +138,29 @@ export interface ISource
 {
   /** Набор таблиц */
   grids: BehaviorSubject<IGrid[]>;
+}
+
+/** Положение скролла */
+export interface IScrollPosition
+{
+  /** Сверху */
+  top: number;
+  /** Слева */
+  left: number;
+}
+
+/** Результат отображения */
+export interface IDrawResult extends IScrollPosition
+{
+  /** Ячейки */
+  cells: ICell[];
+}
+
+/** Изменение ячеек */
+export interface ICellChange
+{
+  /** Ячейки */
+  cells: ICell[];
+  /** Ожидание */
+  waiter: Subject<void>;
 }

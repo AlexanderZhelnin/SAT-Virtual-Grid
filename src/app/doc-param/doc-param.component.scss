@@ -20,11 +20,14 @@
     padding: 3px 2px;
     border-radius: 2px;
   }
-  // border: 1px solid #aaa;
-  // background-color: lightcoral;
   text-decoration: underline;
   color: blue;
   background-color: rgb(240,240,240);
   outline: none;
   cursor: pointer;
+
+  input{
+    width: 40px;
+  }
+  display: inline-block;
 }

@@ -3,17 +3,18 @@
 <p> Колонок: {{columns.length}} </p> 
 
 <sat-virtual-grid
-  #sc
+  #vg
   [source]="source"
   [buffer]="{ y: 5, x: 1 }"
+  [defaultScroll]="true"
   (loadedCells)="onLoadedCells($event)"
   (unLoadedCells)="onUnLoadedCells($event)"
-  (afterDraw)="onAfterDraw($event)"
->
+  (afterDraw)="onAfterDraw($event)">
 </sat-virtual-grid>
 
 <ng-template #section let-cell>
-  <div class="section">
+  <div class="section" [class.expanded]="cell.row?.isExpanded">
+    <i class="fas left-ico fa-chevron-down" aria-hidden="true"></i>
     <div class="header">{{ cell.content }}</div>
   </div>
 </ng-template>

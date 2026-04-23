@@ -1,65 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { BehaviorSubject, debounceTime, Subject } from 'rxjs';
-import { ICell, IColumn, IGrid, IRow, ISource, SATVirtualGrigComponent } from 'sat-virtual-grid';
-import { loremIpsum } from "lorem-ipsum";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { ICell, ICellChange, IColumn, IDrawResult, IGrid, IRow, ISource, SATVirtualGrigComponent } from 'sat-virtual-grid';
+import { loremIpsum } from 'lorem-ipsum';
 
-/**
- * Получить текущую позицию курсора
- * @param context узел html
- * @returns позиция
- */
-function getCursorPosition(context: Node): number
-{
-  const selection = window.getSelection();
-  if (!selection) return 0;
-  const range = selection.getRangeAt(0);
-  range.setStart(context, 0);
-
-  return range.toString().length;
-}
-
-/**
- * Установить позицию курсора
- * @param context узел html
- * @param len позиция
- */
-function setCursorPosition(context: Node, len: number): void
-{
-  const selection = window.getSelection();
-  const pos = getTextNodeAtPosition(context, len);
-  selection?.removeAllRanges();
-  const r = new Range();
-  r.setStart(pos.node, pos.position);
-  selection?.addRange(r);
-}
-
-/**
- * Получить позицию узла
- *
- * @param root Корневой узел
- * @param index Индекс
- * @returns Позиция
- */
-function getTextNodeAtPosition(root: Node, index: number): { /** Узел */node: Node; /** Позиция */position: number }
-{
-  const treeWalker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT,
-    {
-      acceptNode: (elem: Node): number =>
-      {
-        const l = elem?.textContent?.length ?? 0;
-        if (index > l)
-        {
-          index -= l;
-          return NodeFilter.FILTER_REJECT;
-        }
-        return NodeFilter.FILTER_ACCEPT;
-      }
-    });
-
-  return { node: treeWalker.nextNode() ?? root, position: index };
-}
-
-
+/** Тестовый компонент */
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -69,29 +13,52 @@ function getTextNodeAtPosition(root: Node, index: number): { /** Узел */node
 })
 export class AppComponent implements OnInit
 {
-  private readonly cdr = inject(ChangeDetectorRef);
+  stestH1 = 41;
+  stestH2 = 1000;
+  @ViewChild('stest', { static: true }) stest!: ElementRef<any>;
+  /** Обнаружение изменений */
+  readonly cdr = inject(ChangeDetectorRef);
 
+
+  /** Шаблон раздела */
   @ViewChild('section', { static: true }) sectionTemplate!: TemplateRef<any>;
+  /** Шаблон подраздела */
   @ViewChild('subSection', { static: true }) subSectionTemplate!: TemplateRef<any>;
+  /** Шаблон Свёрнутой колонки */
   @ViewChild('columnCollapsed', { static: true }) columnCollapsedTemplate!: TemplateRef<any>;
+  /** Шаблон колонки */
   @ViewChild('column', { static: true }) columnTemplate!: TemplateRef<any>;
+  /** Шаблон ячейки с данными */
   @ViewChild('block', { static: true }) blockTemplate!: TemplateRef<any>;
+  /** Шаблон нумерации */
   @ViewChild('number', { static: true }) numberTemplate!: TemplateRef<any>;
+  /** Шаблон ячейки стабилизации высоты */
   @ViewChild('block_stub', { static: true }) blockStubTemplate!: TemplateRef<any>;
+  /** Шаблон последней ячейки */
   @ViewChild('blockLast', { static: true }) blockLastTemplate!: TemplateRef<any>;
+  /** Шаблон добавить строку */
   @ViewChild('addRow', { static: true }) addRowTemplate!: TemplateRef<any>;
+  /** Шаблон добавить колонки */
   @ViewChild('addColumn', { static: true }) addColumnTemplate!: TemplateRef<any>;
 
+  /** Виртуальный грид */
+  @ViewChild('vg') vg!: SATVirtualGrigComponent;
 
-  @ViewChild('sc') sc!: SATVirtualGrigComponent;
-  @ViewChild('sc', { read: ElementRef }) svg!: ElementRef<HTMLElement>;
-
+  /** Уникальный идентификатор */
   private id = 0;
+  /** Номер строки */
   private rowIndex = 0;
+  /** zIndex */
   private zIndex = 100;
+  /** zIndex раздела */
   private zIndexSection = Number.MAX_SAFE_INTEGER - 10000;
+  /** Последняя строка */
   private lastRow: IRow | undefined = undefined;
 
+  /** Данные ячейки */
+  private cellsData: Record<string, Record<string, any>> = {};
+
+  /** Колонки */
   columns: IColumn[] = [
     { width: '10rem' },
     { width: '4rem' },
@@ -143,22 +110,24 @@ export class AppComponent implements OnInit
     { width: '2rem' }
   ];
 
-  // get columnsStr(): string { return this.columns.map(c => c.width).join(' '); }
-
+  /** Источник */
   source: ISource = {
     grids: new BehaviorSubject<IGrid[]>([])
   };
 
+  /** Количество строк */
   rowsCount = 0;
 
+  /** Обработчик инициализация */
   ngOnInit(): void
   {
     this.loadGrids();
   }
 
+  /** Загрузка сеток */
   loadGrids(): void
   {
-    this.source.grids.value.flatMap(g => g.rows)
+    this.source.grids.value.flatMap(g => g.rows);
 
     for (let l = 0; l < 20; l++)
     {
@@ -169,7 +138,6 @@ export class AppComponent implements OnInit
         columns: new BehaviorSubject(this.columns.map(c => ({ ...c }))),
         rows: new BehaviorSubject(rows)
       });
-
 
       const sectionRow = this.generateRow([
         {
@@ -183,7 +151,7 @@ export class AppComponent implements OnInit
           click: (me: MouseEvent, cell: ICell): void =>
           {
             if (!cell.row) return;
-            this.sc.onExpand(cell.row, !cell.row.isExpanded);
+            this.vg.onExpand(cell.row, !cell.row.isExpanded);
             cell.position = cell.row.isExpanded ? 'sticky' : undefined;
           }
 
@@ -228,15 +196,34 @@ export class AppComponent implements OnInit
               id: `_${++this.id}`,
               content: `${j}-${l}`,
               colStart: j * 2 + 4,
-              background: 'darkgrey',
+              background: (j === ((this.columns.length - 3) / 2 - 1))
+                ? 'gray'
+                : 'darkgrey',
               template: this.columnTemplate,
               zIndex: this.zIndex++,
               canHide: false,
               position: 'sticky',
               top: 20,
+              right: (j === ((this.columns.length - 3) / 2 - 1))
+                ? 30
+                : undefined,
               maxHeight: 21,
               dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn(cell.row?.grid!, (cell.colStart ?? 1) - 1)
             } as ICell)),
+          {
+            id: `_${++this.id}`,
+            content: '',
+            colStart: this.columns.length,
+            background: 'white',
+
+            zIndex: this.zIndex++,
+            canHide: false,
+            position: 'sticky',
+            top: 20,
+            right: 0,
+            maxHeight: 21
+          } as ICell,
+
           ...[...Array((this.columns.length - 3) / 2).keys()]
             .map(j => ({
               id: `_${++this.id}`,
@@ -248,7 +235,6 @@ export class AppComponent implements OnInit
               wenColumnCollapsed: true,
               dblclick: (me: MouseEvent, cell: ICell): void => this.onClickColumn(cell.row?.grid!, (cell.colStart ?? 1) - 1)
             } as ICell)),
-
           subSection = {
             id: `_${++this.id}`,
             content: `Субраздел ${l} - ${0}`,
@@ -290,12 +276,21 @@ export class AppComponent implements OnInit
 
   }
 
-  onUnLoadedCells(e: { cells: ICell[]; waiter?: Subject<void> | undefined; }): void
+  /**
+   * Обработчик события выгрузки ячеек
+   * @param e аргумент
+   */
+  onUnLoadedCells(e: ICellChange): void
   {
     // console.log('onUnLoadedCells', e.cells);
-    setTimeout(() => e.waiter?.next(), 0);
+    setTimeout(() => e.waiter.next(), 0);
   }
-  onLoadedCells(e: { cells: ICell[]; waiter?: Subject<void> | undefined }): void
+
+  /**
+   * Обработчик события загрузки ячеек
+   * @param e аргумент
+   */
+  onLoadedCells(e: ICellChange): void
   {
     // console.log('onLoadedCells', e.cells);
 
@@ -303,32 +298,26 @@ export class AppComponent implements OnInit
       this.loadGrids();
     // if(e.cells.some(cell=>cell.ro))
 
-    setTimeout(() => e.waiter?.next(), 0);
+    setTimeout(() => e.waiter.next(), 0);
   }
 
+  /** Последние отрисованные ячейки */
   lastDrawCells: ICell[] = [];
-  onAfterDraw(e: { scrollTop: number; scrollLeft: number; cells: ICell[]; })
+  /**
+   * Обработчик события после отрисовки
+   * @param e Аргумент
+   */
+  onAfterDraw(e: IDrawResult): void
   {
     this.lastDrawCells = e.cells;
-    // const cell = e.cells.find(cell => cell.content === 3)!;
-    // const cellElement = document.querySelector(`#${cell?.id}`);
-    // if (!cellElement) return;
-
-    // const y = cellElement.getBoundingClientRect().y - this.svg.nativeElement.getBoundingClientRect().y;
-
-
-    // const newClass = y <= 55 ? 'hidden' : undefined;
-    // if (cell.class !== newClass)
-    // {
-    //   cell.class = newClass;
-    //   this.sc.update();
-    // }
-
-
-    //console.log(y);
-
   }
 
+  /**
+   * Группировка
+   * @param xs Ячейки
+   * @param predicate функция
+   * @returns Сгруппированные ячейки
+   */
   groupBy<T>(xs: ICell[], predicate: (cell: ICell) => T): Map<T, ICell[]>
   {
     return xs.reduce((rv, cell) =>
@@ -340,8 +329,15 @@ export class AppComponent implements OnInit
       mas.push(cell);
       return rv;
     }, new Map<T, ICell[]>());
-  };
+  }
 
+  /**
+   * Генерация строки
+   * @param count Количество
+   * @param parent Родитель
+   * @param subSection Подраздел
+   * @returns строка ячеек
+   */
   private generateRowsBlock(count: number, parent: IRow, subSection: ICell): IRow[]
   {
     const result: IRow[] = [];
@@ -353,6 +349,11 @@ export class AppComponent implements OnInit
     return result;
   }
 
+  /**
+   * Генерация ячеек
+   * @param columns Колонки
+   * @returns Ячейки
+   */
   private generateBlockCells(columns: IColumn[]): ICell[]
   {
     const count = (columns.length - 3) / 2;
@@ -360,7 +361,7 @@ export class AppComponent implements OnInit
     const collapsedCells: ICell[] = [...Array(count - 1).keys()]
       .map(j => ({
         id: `_${++this.id}`,
-        height: 40,
+        height: 100,
         colStart: j * 2 + 4,
         template: this.blockStubTemplate,
         wenColumnCollapsed: true,
@@ -369,17 +370,20 @@ export class AppComponent implements OnInit
 
     collapsedCells.push({
       id: `_${++this.id}`,
-      height: 40,
+      height: 100,
       colStart: (count - 1) * 2 + 4,
       template: this.blockStubTemplate,
       wenColumnCollapsed: true,
       zIndex: -1
-    })
+    });
+
+    let maxWords = Math.random() * 15;
+    if (maxWords < 5) maxWords = 5;
 
     return [
       {
         id: `_${++this.id}`,
-        height: 40,
+        height: 100,
         colStart: 2,
         content: ++this.rowIndex,
         template: this.numberTemplate,
@@ -391,28 +395,48 @@ export class AppComponent implements OnInit
       ...[...Array(count - 1).keys()]
         .map(j => ({
           id: `_${++this.id}`,
-          height: 40,
+          height: 100,
           colStart: j * 2 + 4,
-          content: this.generateRandomString(),
+          content: this.generateRandomString(maxWords),
           template: this.blockTemplate,
-          linkedHeightCell: collapsedCells[j]
+          linkedHeightCell: collapsedCells[j],
+          background: 'white',
         })),
       {
         id: `_${++this.id}`,
-        height: 40,
+        height: 100,
+        background: 'lightgray',
         colStart: (count - 1) * 2 + 4,
-        content: this.generateRandomString(),
+        content: this.generateRandomString(maxWords),
         template: this.blockLastTemplate,
         linkedHeightCell: collapsedCells[collapsedCells.length - 1],
-        // position: 'sticky',
-        // right: 32
+        position: 'sticky',
+        right: 30,
+        zIndex: 3
+      },
+      {
+        id: `_${++this.id}`,
+        height: 100,
+        colStart: columns.length,
+        content: '',
+        background: 'white',
+        zIndex: 2,
+        position: 'sticky',
+        right: 0
+
       }
+
     ];
   }
 
+  /**
+   * Генерация строки с кнопкой добавить
+   * @param parent Родитель
+   * @param subSection Подраздел
+   * @returns Строка
+   */
   private generateAddRow(parent: IRow, subSection: ICell): IRow
   {
-    // const count = (parent.grid.columns.value.length - 3) / 2;
     return this.generateRow([
 
       {
@@ -424,20 +448,16 @@ export class AppComponent implements OnInit
         position: 'relative',
         template: this.addRowTemplate
       } as ICell
-
-
-      // ...[...Array(count - 1).keys()].map(j =>
-      // ({
-      //   id: `${++this.id}`,
-      //   height: 0,
-      //   zIndex: 2,
-      //   colStart: j * 2 + 4,//this.columns.length - 1,
-      //   position: 'relative',
-      //   template: this.addRowTemplate
-      // } as ICell))
     ], parent, subSection);
   }
 
+  /**
+   * Генерация строки
+   * @param cells Ячейки
+   * @param parent Родитель
+   * @param subSection Подраздел
+   * @returns Строка
+   */
   generateRow(cells: ICell[], parent: IRow | undefined = undefined, subSection: ICell | undefined = undefined): IRow
   {
     const row: IRow = { cells, parent, grid: parent ? parent.grid : this.source.grids.value[this.source.grids.value.length - 1], tag: subSection };
@@ -446,48 +466,39 @@ export class AppComponent implements OnInit
     return row;
   }
 
+  /** Индекс web component */
   dataCodeIndex = 1;
-  generateRandomString(): string
+  /**
+   * @param max Max. number of words per sentence
+   * @returns Генерация строки
+   */
+  generateRandomString(max: number): string
   {
-
-    var result = loremIpsum({
-      count: 1,                // Number of "words", "sentences", or "paragraphs"
-      format: "plain",         // "plain" or "html"
+    let result = loremIpsum({
+      count: 2,                // Number of "words", "sentences", or "paragraphs"
+      format: 'plain',         // "plain" or "html"
       paragraphLowerBound: 3,  // Min. number of sentences per paragraph.
-      paragraphUpperBound: 7,  // Max. number of sentences per paragarph.
+      paragraphUpperBound: 3,  // Max. number of sentences per paragarph.
       random: Math.random,     // A PRNG function
       sentenceLowerBound: 5,   // Min. number of words per sentence.
-      sentenceUpperBound: 15,  // Max. number of words per sentence.
-      suffix: "\n",            // Line ending, defaults to "\n" or "\r\n" (win32)
-      units: "sentences",      // paragraph(s), "sentence(s)", or "word(s)"
+      sentenceUpperBound: Math.round(max),  // Max. number of words per sentence.
+      suffix: '\n',            // Line ending, defaults to "\n" or "\r\n" (win32)
+      units: 'sentences',      // paragraph(s), "sentence(s)", or "word(s)"
       //words: ["ad", ...]       // Array of words to draw from
-    })
+    });
 
     result = result
       .split(' ').map((s, index) =>
         (index % 2) === 0 ? ` ${s} <doc-param contenteditable="false" data-code="code_${this.dataCodeIndex++}"></doc-param>` : ` ${s}`).join();
 
     return result;
-
-    // let result = '';
-    // let characters = 'АБВГДЕЁЖЗИЛМНОПРСТУФХЦЧЩЪЫЭЮЯабвгдеёжзилмнопрстуфхцчщъыэюя0123456789';
-    // let charactersLength = characters.length;
-
-
-    // const words = Math.floor(Math.random() * 10);
-
-    // for (var w = 0; w < words; w++)
-    // {
-    //   const length = Math.floor(Math.random() * 10);
-    //   for (var i = 0; i < length; i++)
-    //     result += characters.charAt(Math.floor(Math.random() * charactersLength));
-
-    //   result += ` <doc-param data-code="code_${this.dataCodeIndex++}" ></doc-param>`;
-    // }
-
-    // return result;
   }
 
+  /**
+   * Обработчик события клика по колонке
+   * @param grid Сетка
+   * @param columnIndex Индекс колонки
+   */
   onClickColumn(grid: IGrid, columnIndex: number): void
   {
     const column = grid.columns.value[columnIndex];
@@ -497,42 +508,20 @@ export class AppComponent implements OnInit
     grid.columns.next([...grid.columns.value]);
   }
 
-  onScrollTo(): void
-  {
-    let index = -1;
-    let fined = false;
-    function finedRow(r: IRow): boolean
-    {
-      if (r.cells.some(cell => cell.content == '100'))
-      {
-        console.log('srg', r);
-        return true;
-      }
-
-      index++;
-
-      if (r.isExpanded)
-        for (const ch of r.children ?? [])
-          if (finedRow(ch)) return true;
-
-      return false;
-    }
-
-    for (const g of this.source.grids.value)
-      for (const r of g.rows.value)
-      {
-        if (finedRow(r))
-        {
-          this.sc.navigate(index);
-          return;
-        }
-        index++;
-      }
-  }
-
+  /** Номер новой колонки */
   private addedColumnIndex = 0;
+
+  /**
+   * Обработчик события добавления колонки
+   * @param grid Сетка
+   * @param index Индекс колонки
+   */
   onAddColumn(grid: IGrid, index: number): void
   {
+    /**
+     * Функция раздвижки
+     * @param row Строка
+     */
     function shift(row: IRow): void
     {
       row.cells.forEach(cell =>
@@ -611,15 +600,19 @@ export class AppComponent implements OnInit
           height: 40,
           colStart: index + 1,
           rowStart: i,
-          content: this.generateRandomString(),
+          content: this.generateRandomString(15),
           template: this.blockTemplate,
           linkedHeightCell: collapsedCells
         }
       );
 
-    this.sc.update();
+    this.vg.update();
   }
 
+  /**
+   * Обработчик события добавления строки
+   * @param cell Ячейка
+   */
   onAddRow(cell: ICell): void
   {
     const parent = cell.row?.parent;
@@ -639,18 +632,31 @@ export class AppComponent implements OnInit
     this.source.grids.next(this.source.grids.value);
   }
 
-  /** Потеря фокуса на ячейке */
+  /**
+   * Потеря фокуса на ячейке
+   * @param cell Ячейка
+   * @param e Аргумент
+   */
   onCellLostFocus(cell: ICell, e: Event): void
   {
     cell.row!.height = 0;
     cell.row?.cells.forEach(c => c.height = 0);
     cell.content = (e.target as any).innerHTML;
-    this.sc.update();
+    this.vg.update();
   }
 
+  /** Предыдущая позиция мышки */
   private prevMousePosition!: number;
+  /** Предыдущий размер колонки */
   private prevWidth!: number;
+  /** Ячейка */
   private mouseCell!: ICell;
+
+  /**
+   * Обработчик нажатия изменения размера колонки
+   * @param event Аргумент
+   * @param cell Ячейка
+   */
   onColumnResizeMousedown(event: MouseEvent, cell: ICell): void
   {
     event.preventDefault();
@@ -674,7 +680,7 @@ export class AppComponent implements OnInit
     // this.prevMousePosition = event.clientX;
 
     const column = this.mouseCell.row!.grid.columns.value[this.mouseCell.colStart! - 1];
-    column.width = `${dWidth}px`
+    column.width = `${dWidth}px`;
     column.widthInPx = dWidth;
     this.mouseCell.row?.grid.columns.next([...this.mouseCell.row?.grid.columns.value]);
 
@@ -687,15 +693,20 @@ export class AppComponent implements OnInit
         cell.row!.height = 40;
       });
 
-    this.sc.update();
+    this.vg.update();
   };
 
+  /**
+   * Получение колонки
+   * @param cell Ячейка
+   * @returns Колонка
+   */
   getColumn(cell: ICell): IColumn
   {
     return cell.row!.grid.columns.value[cell.colStart! - 1];
   }
 
-  /* Обработчик событий отжатия мышки */
+  /** Обработчик событий отжатия мышки */
   private readonly handleMouseup = (): void =>
   {
     // this.widthChanged.next();

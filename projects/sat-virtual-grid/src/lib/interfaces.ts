@@ -20,10 +20,11 @@ export interface IDataGrid
 
   /** Отображаемые ячейки */
   itemsX: BehaviorSubject<ICell[]>;
+
   /** Колонки */
   columns: IColumn[];
   /** Добавляемый прикрепляемый элемент  */
-  addedSticky: { rowStart: number; height: number };
+  addedSticky: { /** Номер строки */ rowStart: number; /** Высота */ height: number };
 
   /** Номер начальной и конечной строки */
   index: IIndex;
@@ -54,4 +55,6 @@ export interface IGridFlat extends IId
   /** Строки */
   rows: IRow[];
 }
+
+
 

@@ -1,19 +1,13 @@
-import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 
+/** Веб компонент */
 @Component({
   selector: 'app-doc-param',
   templateUrl: './doc-param.component.html',
   styleUrls: ['./doc-param.component.scss']
 })
-export class DocParamComponent implements OnDestroy
+export class DocParamComponent
 {
-  ngOnDestroy(): void
-  {
-    if (this.dataCode === 'code_1')
-    {
-      console.log('Удаление');
-    }
-  }
   /** Код параметра */
   private _dataCode?: string;
 

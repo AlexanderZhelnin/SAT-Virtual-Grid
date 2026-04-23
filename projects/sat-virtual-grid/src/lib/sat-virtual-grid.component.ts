@@ -3,7 +3,7 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { BehaviorSubject, debounceTime, filter, firstValueFrom, fromEvent, Subject, Subscription } from 'rxjs';
 import { Flat } from './flat';
 import { IData, IDataGrid, IGridFlat, IIndex } from './interfaces';
-import { ICell, IColumn, IGrid, IHeight, IId, IRow, ISource, IUpdate } from './models';
+import { ICell, ICellChange, IColumn, IDrawResult, IGrid, IHeight, IId, IRow, IScrollPosition, ISource, IUpdate } from './models';
 
 
 /** Компонент виртуального скроллинга таблицы */
@@ -26,10 +26,23 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
 
   /** Событие перерасчёта элементов */
   refreshItems$ = new Subject<void>();
+
   /** Событие обновления */
   private refresh$ = new Subject<void>();
 
+  /** Подписки */
   private subs: Subscription[] = [];
+
+  /** Флаг скроллинга по умолчанию */
+  private _defaultScroll = false;
+  /** @returns Флаг скроллинга по умолчанию */
+  get defaultScroll(): boolean { return this._defaultScroll; }
+  /** Флаг скроллинга по умолчанию */
+  @Input() set defaultScroll(value: boolean)
+  {
+    this._defaultScroll = value;
+    if (this.sc) this.sc.disabled = value;
+  }
 
   /** Источник данных */
   private _source: ISource = { grids: new BehaviorSubject<IGrid[]>([{ id: '0', rows: new BehaviorSubject<IRow[]>([]), columns: new BehaviorSubject<IColumn[]>([]) }]) };
@@ -60,12 +73,15 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /** Событие загрузки ячеек */
-  @Output() loadedCells = new EventEmitter<{ cells: ICell[]; waiter?: Subject<void> }>();
+  @Output() loadedCells = new EventEmitter<ICellChange>();
   /** Событие выгрузки ячеек */
-  @Output() unLoadedCells = new EventEmitter<{ cells: ICell[]; waiter?: Subject<void> }>();
+  @Output() unLoadedCells = new EventEmitter<ICellChange>();
 
   /** Событие Отрисовки */
-  @Output() afterDraw = new EventEmitter<{ scrollTop: number; scrollLeft: number, cells: ICell[] }>();
+  @Output() afterDraw = new EventEmitter<IDrawResult>();
+
+  /** Событие Изменение высоты ячейки */
+  @Output() resizeCell = new EventEmitter<ICell>();
 
   /** Плоский список строк */
   private _itemsFlat: IGridFlat[] = [];
@@ -73,10 +89,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   /** Буферное количество строк */
   @Input() buffer = { y: 5, x: 2 };
 
-  /**
-   * Пустой индекс
-   * @returns Индекс
-   */
+  /** @returns Пустой индекс */
   private get emptyIndex(): IIndex { return ({ startYIndex: 0, endYIndex: -1 }); }
 
   /** Индексы отрисовки */
@@ -90,9 +103,8 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   /** Событие обновления высоты */
   readonly updateHeight$ = new Subject<void>();
 
-  // readonly updateStart$ = new Subject<void>;
   /** Событие обновления */
-  protected readonly updateScroll$ = new Subject<{ top: number; left: number }>();
+  protected readonly updateScroll$ = new Subject<IScrollPosition>();
 
   /** Наблюдатель за размером */
   private resizeObserver = new ResizeObserver(entries =>
@@ -101,14 +113,10 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       if (entry.contentRect.height !== this.height)
         this.height = entry.contentRect.height;
 
-
     this.lastUpdateScroll = 0;
     this.lastPositionTop.length = 0;
-    // this.updateScroll$.next({
-    //   top: this._scrollTop,
-    //   left: this._scrollLeft
-    // });
-    this.update();
+
+    this.refreshItems$.next();
   });
 
   /** данные */
@@ -138,19 +146,23 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   /** Позиция скроллинга по вертикали */
   private _scrollTop = 0;
   /** @returns Позиция скроллинга по вертикали */
-  get scrollTop() { return this._scrollTop; }
+  get scrollTop(): number { return this._scrollTop; }
 
   /** Позиция скроллинга по горизонтали  */
   private _scrollLeft = 0;
-  /** @returns Позиция скроллинга по горизонтали */
-  get scrollLeft() { return this._scrollLeft; }
 
+  /** @returns Позиция скроллинга по горизонтали */
+  get scrollLeft(): number { return this._scrollLeft; }
+
+  /** Последние положение прокрутки */
   private lastUpdateScroll = 0;
+  /** Последние положения */
   private lastPositionTop: number[] = [];
 
   /** Жизненный цикл */
   ngOnInit(): void
   {
+    this.sc.disabled = this.defaultScroll;
     this.refreshItems$.pipe(debounceTime(50)).subscribe(() =>
     {
       this.calcItemsFlat();
@@ -164,8 +176,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       this.calcMaxHeight();
       this.update();
     });
-
-
 
     this.updateScroll$.pipe(debounceTime(50)).subscribe(position =>
     {
@@ -198,12 +208,10 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
         {
           i -= this.buffer.y;
 
-          //if (i >= this.itemsFlat.length) i = this.itemsFlat.length - 1;
           if (i < 0) i = 0;
 
           this.index.startYIndex = i;
-          this.update();
-          //this.cdr.detectChanges();
+          this.update().then(() => this.sc.scrollTo({ top: position.top, left: position.left, duration: 0 }));
           return true;
         }
         i++;
@@ -234,14 +242,15 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     {
       this._oldData = this._data;
       this._data = this.calcData();
+
       await this.diffData(this._oldData, this._data);
     }
 
     this.cdr.detectChanges();
 
     this.afterDraw.next({
-      scrollTop: this.scrollTop,
-      scrollLeft: this.scrollLeft,
+      top: this.scrollTop,
+      left: this.scrollLeft,
       cells: [...this.data.grids.map(g => g.itemsX.value).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
     });
   }
@@ -267,8 +276,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       if (h < 0) h = 0;
 
       this.sc.scrollTo({ top: h, left: this.scrollLeft, duration: 0 });
-      // this.updateScroll$.next({ top: h, left: this.scrollLeft });
-
     };
     nav();
     setTimeout(() => nav(), 1000);
@@ -308,7 +315,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
         g.rows[i].cells.forEach(cell => cell.rowStart = i + 1);
     }
 
-    // this._itemsFlat = [...this._itemsFlat];
     this.calcMaxHeight();
     this._data = this.clearData;
     this.update();
@@ -376,12 +382,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
         gridDraw.index.endYIndex++;
 
       if (calcEnd) result.index.endYIndex++;
-      // row.cells.forEach(cell =>
-      // {
-      //   if (this.calcHideCell(cell)) return;
-      //   cells.push(cell);
-      //   dItems.add(cell);
-      // });
 
       h += row.height ?? 20;
       if (h - this.scrollTop >= this.height)
@@ -410,7 +410,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
         const row = rows[ri];
 
         if (row.cells.some(cell => cell.position === 'sticky' && typeof cell.top === 'number' && !added.has(cell.top) && added.add(cell.top)))
-        {
           row.cells.forEach(cell =>
           {
             if (cell.position !== 'sticky' || typeof cell.top !== 'number') return;
@@ -426,7 +425,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
               firstStickyIndex = ri;
             }
           });
-        }
 
         row.cells.forEach(cell =>
         {
@@ -446,7 +444,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Группируем по сеткам
     cells.forEach(cell => dGrid.get(cell.row!.grid)?.items.push(cell));
-
 
     //#region Вычисление высоты после
     h = 0;
@@ -507,11 +504,11 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   /** Вычисление максимальной высоты */
   private calcMaxHeight(): void
   {
-    this.maxHeight = 0;
+    let h = 0;
 
-    new Flat(this._itemsFlat).forEach(row => { this.maxHeight += this.calcRowHight(row); });
+    new Flat(this._itemsFlat).forEach(row => { h += this.calcRowHight(row); });
 
-    this.maxHeight += 2;
+    this.maxHeight = h + 2;
   }
 
   /**
@@ -590,10 +587,11 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * Расчёт ключа
-   * @param _ номер
+   * @param index номер
    * @param v элемент
    * @returns Ключ
    */
+  // eslint-disable-next-line no-unused-vars
   protected trackByIndex(index: number, v: unknown): number { return index; }
 
   /**
@@ -612,8 +610,8 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
    * Получить ячейки
    * @param grid Сетка
    */
-  // protected getCellsAsync(grid: IDataGrid): void
-  protected async getCellsAsync(grid: IDataGrid): Promise<void>
+  protected getCellsAsync(grid: IDataGrid): void
+  // protected async getCellsAsync(grid: IDataGrid): Promise<void>
   {
     if (grid.columns.some(c => c.widthInPx === undefined)) return;
     if (grid.itemsX.value.length > 0) return;
@@ -677,33 +675,33 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
 
     grid.itemsX.next(result);
 
-    const removed: ICell[] = [];
-    const added: ICell[] = [];
+    // const removed: ICell[] = [];
+    // const added: ICell[] = [];
 
-    const oldGrid = this._oldData.grids.find(g => g.id === grid.id);
-    if (oldGrid)
-    {
-      const dNewCells = this.toDictionary([...result, ...grid.items]);
-      const dOldCells = this.toDictionary([...oldGrid.itemsX.value, ...oldGrid.items]);
+    // const oldGrid = this._oldData.grids.find(g => g.id === grid.id);
+    // if (oldGrid)
+    // {
+    //   const dNewCells = this.toDictionary([...result, ...grid.items]);
+    //   const dOldCells = this.toDictionary([...oldGrid.itemsX.value, ...oldGrid.items]);
 
-      for (const cell of oldGrid.items)
-        if (!dNewCells.has(cell.id))
-          removed.push(cell);
+    //   for (const cell of oldGrid.items)
+    //     if (!dNewCells.has(cell.id))
+    //       removed.push(cell);
 
-      for (const cell of oldGrid.itemsX.value)
-        if (!dNewCells.has(cell.id))
-          removed.push(cell);
+    //   for (const cell of oldGrid.itemsX.value)
+    //     if (!dNewCells.has(cell.id))
+    //       removed.push(cell);
 
-      for (const cell of result)
-        if (!dOldCells.has(cell.id))
-          added.push(cell);
+    //   for (const cell of result)
+    //     if (!dOldCells.has(cell.id))
+    //       added.push(cell);
 
-      for (const cell of grid.items)
-        if (!dOldCells.has(cell.id))
-          added.push(cell);
-    }
-    else
-      added.push(...result);
+    //   for (const cell of grid.items)
+    //     if (!dOldCells.has(cell.id))
+    //       added.push(cell);
+    // }
+    // else
+    //   added.push(...result);
 
 
     // if (removed.length)
@@ -713,12 +711,12 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     //   await firstValueFrom(unLoadedWaiter);
     // }
 
-    if (added.length)
-    {
-      const loadedWaiter = new Subject<void>();
-      this.loadedCells.emit({ cells: added, waiter: loadedWaiter });
-      await firstValueFrom(loadedWaiter);
-    }
+    // if (added.length)
+    // {
+    //   const loadedWaiter = new Subject<void>();
+    //   this.loadedCells.emit({ cells: added, waiter: loadedWaiter });
+    //   await firstValueFrom(loadedWaiter);
+    // }
   }
 
 }

@@ -7,11 +7,15 @@ import { ICell, IHeight } from './models';
 @Directive({ selector: '[dynamicHeight]' })
 export class DynamicHeightDirective implements AfterViewInit, OnDestroy
 {
+  /** Ячейка */
   @Input() dynamicHeight: ICell | undefined;
+  /** Объект обновления */
   // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('root') r: IHeight | undefined;
 
+  /** Отслеживание изменений размера */
   private resizeObserver: ResizeObserver | undefined;
+  /** Элемент */
   private elementRef = inject(ElementRef);
 
   /** Жизненный цикл после построения представления */
@@ -31,7 +35,11 @@ export class DynamicHeightDirective implements AfterViewInit, OnDestroy
           isUpdate = true;
         }
 
-      if (isUpdate) this.r?.updateHeight$?.next();
+      if (isUpdate)
+      {
+        this.r?.updateHeight$?.next();
+        this.r?.resizeCell.next(this.dynamicHeight!);
+      }
     });
     this.resizeObserver.observe(this.elementRef.nativeElement);
   }

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Input, OnDestroy, inject } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, OnDestroy, inject } from '@angular/core';
 import { IColumn, IUpdate } from './models';
 
 
@@ -7,15 +7,19 @@ import { IColumn, IUpdate } from './models';
 @Directive({ selector: '[dynamicWidth]' })
 export class DynamicWidthDirective implements AfterViewInit, OnDestroy
 {
+  /** Колонки */
   @Input() column: IColumn | undefined;
+  /** Список колонок */
   @Input() columns: IColumn[] | undefined;
 
-  // @Input() cdr: ChangeDetectorRef | undefined;
-  // @Input() column: IColumn | undefined;
-  @Input('root') r: IUpdate | undefined;
-  
+  /** Объект обновления */
+  // eslint-disable-next-line @angular-eslint/no-input-rename
+  @Input('root')
+  r: IUpdate | undefined;
 
+  /** Отслеживание изменений размера */
   private resizeObserver: ResizeObserver | undefined;
+  /** Элемент */
   private elementRef = inject(ElementRef);
 
 
@@ -24,11 +28,11 @@ export class DynamicWidthDirective implements AfterViewInit, OnDestroy
   {
     this.resizeObserver = new ResizeObserver(entries =>
     {
-      let isUpdate = false;
+      // let isUpdate = false;
       for (const entry of entries)
       {
         if (!this.column || this.column?.widthInPx === entry.contentRect.width) continue;
-        isUpdate = true;
+        // isUpdate = true;
         this.column.widthInPx = entry.contentRect.width;
       }
 
