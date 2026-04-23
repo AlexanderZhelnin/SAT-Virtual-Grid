@@ -5,11 +5,13 @@ import { loremIpsum } from 'lorem-ipsum';
 
 /** Тестовый компонент */
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
-  // animations: [Show]
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
+    // animations: [Show]
+    ,
+    standalone: false
 })
 export class AppComponent implements OnInit
 {

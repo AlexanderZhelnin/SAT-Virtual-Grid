@@ -4,7 +4,10 @@ import { ICell, IHeight } from './models';
 
 /** Директива динамического определения высоты */
 // eslint-disable-next-line @angular-eslint/directive-selector
-@Directive({ selector: '[dynamicHeight]' })
+@Directive({
+    selector: '[dynamicHeight]',
+    standalone: false
+})
 export class DynamicHeightDirective implements AfterViewInit, OnDestroy
 {
   /** Ячейка */

@@ -2,9 +2,10 @@ import { Component, HostBinding, Input } from '@angular/core';
 
 /** Веб компонент */
 @Component({
-  selector: 'app-doc-param',
-  templateUrl: './doc-param.component.html',
-  styleUrls: ['./doc-param.component.scss']
+    selector: 'app-doc-param',
+    templateUrl: './doc-param.component.html',
+    styleUrls: ['./doc-param.component.scss'],
+    standalone: false
 })
 export class DocParamComponent
 {

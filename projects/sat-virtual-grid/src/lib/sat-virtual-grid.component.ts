@@ -8,11 +8,12 @@ import { ICell, ICellChange, IColumn, IDrawResult, IGrid, IHeight, IId, IRow, IS
 
 /** Компонент виртуального скроллинга таблицы */
 @Component({
-  // eslint-disable-next-line @angular-eslint/component-selector
-  selector: 'sat-virtual-grid[source]',
-  templateUrl: './sat-virtual-grid.component.html',
-  styleUrls: ['./sat-virtual-grid.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    // eslint-disable-next-line @angular-eslint/component-selector
+    selector: 'sat-virtual-grid[source]',
+    templateUrl: './sat-virtual-grid.component.html',
+    styleUrls: ['./sat-virtual-grid.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy, IHeight
 {

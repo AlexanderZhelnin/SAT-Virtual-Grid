@@ -2,7 +2,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { IColumn } from '../models';
 
 /** Преобразование объектов размера колонок к строке */
-@Pipe({ name: 'columnsPipe' })
+@Pipe({
+    name: 'columnsPipe',
+    standalone: false
+})
 export class ColumnsPipe implements PipeTransform
 {
 

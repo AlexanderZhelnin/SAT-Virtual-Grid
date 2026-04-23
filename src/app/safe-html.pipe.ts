@@ -2,7 +2,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 /** Обёртка для вставки html */
-@Pipe({ name: 'safehtml' })
+@Pipe({
+    name: 'safehtml',
+    standalone: false
+})
 export class SafeHtmlPipe implements PipeTransform
 {
   /**
