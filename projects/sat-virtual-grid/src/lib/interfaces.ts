@@ -20,7 +20,7 @@ export interface IDataGrid
   items: ICell[];
 
   /** Отображаемые ячейки */
-  itemsX: WritableSignal<ICell[]>;
+  itemsX: ICell[];
 
   /** Колонки */
   columns: IColumn[];

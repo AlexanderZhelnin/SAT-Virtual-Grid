@@ -212,7 +212,11 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
           if (i < 0) i = 0;
 
           this.index.startYIndex = i;
-          this.update().then(() => this.sc.scrollTo({ top: position.top, left: position.left, duration: 0 }));
+          this.update().then(() => 
+          {
+            this.cdr.detectChanges();
+            this.sc.scrollTo({ top: position.top, left: position.left, duration: 0 });
+          });
           return true;
         }
         i++;
@@ -247,10 +251,8 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       await this.diffData(this._oldData, this._data);
     }
 
-    //this.cdr.markForCheck();
-    this.cdr.detectChanges();
-
-
+    this.cdr.markForCheck();
+    // this.cdr.detectChanges();
   }
 
   /**
@@ -371,7 +373,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
           addedSticky: { rowStart: 0, height: 0 },
           index: { startYIndex: flat.rowStartIndex!, endYIndex: flat.rowStartIndex! },
           gridIndex: flat.gridStartIndex!,
-          itemsX: signal<ICell[]>([])
+          itemsX: []
         });
 
         dGrid.set(grid, gridDraw);
@@ -495,7 +497,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     {
       if (dNew.has(grid.id)) return;
       removed.push(...grid.items);
-      removed.push(...grid.itemsX());
+      removed.push(...grid.itemsX);
     });
   }
 
@@ -612,7 +614,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   protected async getCellsAsync(grid: IDataGrid): Promise<void>
   {
     if (grid.columns.some(c => c.widthInPx === undefined)) return;
-    if (grid.itemsX().length > 0) return;
+    if (grid.itemsX.length > 0) return;
 
     const element = this.sc.nativeElement.querySelector(`#sat-virtual-grid-${grid.id}`);
     if (!element) return;
@@ -671,7 +673,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
         dItems.add(cell);
       });
 
-    grid.itemsX = signal(result);
+    grid.itemsX = result;
 
     const removed: ICell[] = [];
     const added: ICell[] = [];
@@ -680,13 +682,13 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     if (oldGrid)
     {
       const dNewCells = this.toDictionary([...result, ...grid.items]);
-      const dOldCells = this.toDictionary([...oldGrid.itemsX(), ...oldGrid.items]);
+      const dOldCells = this.toDictionary([...oldGrid.itemsX, ...oldGrid.items]);
 
       for (const cell of oldGrid.items)
         if (!dNewCells.has(cell.id))
           removed.push(cell);
 
-      for (const cell of oldGrid.itemsX())
+      for (const cell of oldGrid.itemsX)
         if (!dNewCells.has(cell.id))
           removed.push(cell);
 
@@ -723,7 +725,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     this.afterDraw.next({
       top: this.scrollTop,
       left: this.scrollLeft,
-      cells: [...this.data.grids.map(g => g.itemsX()).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
+      cells: [...this.data.grids.map(g => g.itemsX).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
     });
     return '';
   }

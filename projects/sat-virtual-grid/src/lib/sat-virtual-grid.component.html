@@ -27,7 +27,7 @@
 
         {{getCells(grid)}}
         
-        @for (cell of grid.itemsX(); track trackById($index, cell)) {
+        @for (cell of grid.itemsX; track trackById($index, cell)) {
           <div
             [id]="cell.id"
             [dynamicHeight]="cell"
@@ -56,7 +56,7 @@
              
           </div>
         }
-        @for (cell of (grid.items ?? []); track trackById($index, cell)) {
+        @for (cell of grid.items; track trackById($index, cell)) {
           <div
             [dynamicHeight]="cell"
             [root]="getThis"
