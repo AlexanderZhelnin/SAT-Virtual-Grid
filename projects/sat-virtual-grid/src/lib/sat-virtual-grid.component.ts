@@ -250,8 +250,8 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       await this.diffData(this._oldData, this._data);
     }
 
+    //  this.cdr.detectChanges();
     this.cdr.markForCheck();
-    //this.cdr.detectChanges();
   }
 
   /**
@@ -727,6 +727,8 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       this.loadedCells.emit({ cells: added, waiter: loadedWaiter });
       await firstValueFrom(loadedWaiter);
     }
+
+    if (grid === this.data.grids[this.data.grids.length - 1]) this.onAfterDraw();
   }
 
 }

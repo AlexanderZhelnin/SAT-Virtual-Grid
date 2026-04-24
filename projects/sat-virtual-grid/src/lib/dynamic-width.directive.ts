@@ -28,18 +28,17 @@ export class DynamicWidthDirective implements AfterViewInit, OnDestroy
   {
     this.resizeObserver = new ResizeObserver(entries =>
     {
-      // let isUpdate = false;
+      let isUpdate = false;
       for (const entry of entries)
       {
         if (!this.column || this.column?.widthInPx === entry.contentRect.width) continue;
-        // isUpdate = true;
+        isUpdate = true;
         this.column.widthInPx = entry.contentRect.width;
       }
 
-      // if (!isUpdate || this.columns?.some(c => c.widthInPx === undefined)) return;
+      if (!isUpdate || this.columns?.some(c => c.widthInPx === undefined)) return;
 
-      // this.cdr?.detectChanges();
-      // this.r?.update();
+      this.r?.update();
     });
     this.resizeObserver.observe(this.elementRef.nativeElement);
   }

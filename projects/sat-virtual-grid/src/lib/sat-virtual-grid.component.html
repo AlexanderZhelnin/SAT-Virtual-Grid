@@ -8,7 +8,7 @@
         class="table">
 
         <div *ngFor="let column of grid.columns; let i = index; trackBy: trackByIndex"
-          class="column-width"  
+          class="column-width"
           [column]="column"
           [columns]="grid.columns"
           [root]="getThis"
@@ -79,8 +79,6 @@
 
       </div>
       <div #end class="end" [style.height.px]="data.endHeight"></div>
-
-      {{onAfterDraw()}}
     </div>
 
 </ng-scrollbar>
