@@ -24,7 +24,7 @@
 
         {{getCells(grid)}}
       
-        <div *ngFor="let cell of grid.itemsX | async; trackBy: trackById"
+        <div *ngFor="let cell of grid.itemsX; trackBy: trackById"
           [id]="cell.id"
           [dynamicHeight]="cell"
           [root]="getThis"
@@ -79,6 +79,8 @@
 
       </div>
       <div #end class="end" [style.height.px]="data.endHeight"></div>
+
+      {{onAfterDraw()}}
     </div>
 
 </ng-scrollbar>

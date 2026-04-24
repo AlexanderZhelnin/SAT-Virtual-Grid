@@ -211,7 +211,11 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
           if (i < 0) i = 0;
 
           this.index.startYIndex = i;
-          this.update().then(() => this.sc.scrollTo({ top: position.top, left: position.left, duration: 0 }));
+          this.update().then(() => 
+          {
+            this.cdr.detectChanges();
+            this.sc.scrollTo({ top: position.top, left: position.left, duration: 0 });
+          });
           return true;
         }
         i++;
@@ -246,13 +250,8 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       await this.diffData(this._oldData, this._data);
     }
 
-    this.cdr.detectChanges();
-
-    this.afterDraw.next({
-      top: this.scrollTop,
-      left: this.scrollLeft,
-      cells: [...this.data.grids.map(g => g.itemsX.value).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
-    });
+    this.cdr.markForCheck();
+    //this.cdr.detectChanges();
   }
 
   /**
@@ -279,6 +278,17 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     };
     nav();
     setTimeout(() => nav(), 1000);
+  }
+
+  /** Данные после отрисовки */
+  onAfterDraw(): string
+  {
+    this.afterDraw.next({
+      top: this.scrollTop,
+      left: this.scrollLeft,
+      cells: [...this.data.grids.map(g => g.itemsX).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
+    });
+    return '';
   }
 
   /**
@@ -373,7 +383,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
           addedSticky: { rowStart: 0, height: 0 },
           index: { startYIndex: flat.rowStartIndex!, endYIndex: flat.rowStartIndex! },
           gridIndex: flat.gridStartIndex!,
-          itemsX: new BehaviorSubject<ICell[]>([])
+          itemsX: []
         });
 
         dGrid.set(grid, gridDraw);
@@ -497,7 +507,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     {
       if (dNew.has(grid.id)) return;
       removed.push(...grid.items);
-      removed.push(...grid.itemsX.value);
+      removed.push(...grid.itemsX);
     });
   }
 
@@ -610,11 +620,11 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
    * Получить ячейки
    * @param grid Сетка
    */
-  protected getCellsAsync(grid: IDataGrid): void
-  // protected async getCellsAsync(grid: IDataGrid): Promise<void>
+  // protected getCellsAsync(grid: IDataGrid): void
+  protected async getCellsAsync(grid: IDataGrid): Promise<void>
   {
     if (grid.columns.some(c => c.widthInPx === undefined)) return;
-    if (grid.itemsX.value.length > 0) return;
+    if (grid.itemsX.length > 0) return;
 
     const element = this.sc.nativeElement.querySelector(`#sat-virtual-grid-${grid.id}`);
     if (!element) return;
@@ -673,50 +683,50 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
         dItems.add(cell);
       });
 
-    grid.itemsX.next(result);
+    grid.itemsX = result;
 
-    // const removed: ICell[] = [];
-    // const added: ICell[] = [];
+    const removed: ICell[] = [];
+    const added: ICell[] = [];
 
-    // const oldGrid = this._oldData.grids.find(g => g.id === grid.id);
-    // if (oldGrid)
-    // {
-    //   const dNewCells = this.toDictionary([...result, ...grid.items]);
-    //   const dOldCells = this.toDictionary([...oldGrid.itemsX.value, ...oldGrid.items]);
+    const oldGrid = this._oldData.grids.find(g => g.id === grid.id);
+    if (oldGrid)
+    {
+      const dNewCells = this.toDictionary([...result, ...grid.items]);
+      const dOldCells = this.toDictionary([...oldGrid.itemsX, ...oldGrid.items]);
 
-    //   for (const cell of oldGrid.items)
-    //     if (!dNewCells.has(cell.id))
-    //       removed.push(cell);
+      for (const cell of oldGrid.items)
+        if (!dNewCells.has(cell.id))
+          removed.push(cell);
 
-    //   for (const cell of oldGrid.itemsX.value)
-    //     if (!dNewCells.has(cell.id))
-    //       removed.push(cell);
+      for (const cell of oldGrid.itemsX)
+        if (!dNewCells.has(cell.id))
+          removed.push(cell);
 
-    //   for (const cell of result)
-    //     if (!dOldCells.has(cell.id))
-    //       added.push(cell);
+      for (const cell of result)
+        if (!dOldCells.has(cell.id))
+          added.push(cell);
 
-    //   for (const cell of grid.items)
-    //     if (!dOldCells.has(cell.id))
-    //       added.push(cell);
-    // }
-    // else
-    //   added.push(...result);
+      for (const cell of grid.items)
+        if (!dOldCells.has(cell.id))
+          added.push(cell);
+    }
+    else
+      added.push(...result);
 
 
-    // if (removed.length)
-    // {
-    //   const unLoadedWaiter = new Subject<void>();
-    //   this.unLoadedCells.emit({ cells: removed, waiter: unLoadedWaiter });
-    //   await firstValueFrom(unLoadedWaiter);
-    // }
+    if (removed.length)
+    {
+      const unLoadedWaiter = new Subject<void>();
+      this.unLoadedCells.emit({ cells: removed, waiter: unLoadedWaiter });
+      await firstValueFrom(unLoadedWaiter);
+    }
 
-    // if (added.length)
-    // {
-    //   const loadedWaiter = new Subject<void>();
-    //   this.loadedCells.emit({ cells: added, waiter: loadedWaiter });
-    //   await firstValueFrom(loadedWaiter);
-    // }
+    if (added.length)
+    {
+      const loadedWaiter = new Subject<void>();
+      this.loadedCells.emit({ cells: added, waiter: loadedWaiter });
+      await firstValueFrom(loadedWaiter);
+    }
   }
 
 }

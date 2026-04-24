@@ -19,7 +19,8 @@ export interface IDataGrid
   items: ICell[];
 
   /** Отображаемые ячейки */
-  itemsX: BehaviorSubject<ICell[]>;
+  //itemsX: BehaviorSubject<ICell[]>;
+  itemsX: ICell[];
 
   /** Колонки */
   columns: IColumn[];
