@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { BehaviorSubject, debounceTime, filter, firstValueFrom, fromEvent, Subject, Subscription } from 'rxjs';
 import { Flat } from './flat';
@@ -252,7 +252,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.cdr.markForCheck();
-    // this.cdr.detectChanges();
+    //this.cdr.detectChanges();
   }
 
   /**
@@ -279,6 +279,16 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     };
     nav();
     setTimeout(() => nav(), 1000);
+  }
+
+  /** Данные после отрисовки */
+  onAfterDraw(): void
+  {
+    this.afterDraw.next({
+      top: this.scrollTop,
+      left: this.scrollLeft,
+      cells: [...this.data.grids.map(g => g.itemsX).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
+    });
   }
 
   /**
@@ -703,7 +713,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     else
       added.push(...result);
 
-
     if (removed.length)
     {
       const unLoadedWaiter = new Subject<void>();
@@ -717,17 +726,9 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
       this.loadedCells.emit({ cells: added, waiter: loadedWaiter });
       await firstValueFrom(loadedWaiter);
     }
-  }
 
-  /** Событие отрисовки */
-  callAfterDraw(): string
-  {
-    this.afterDraw.next({
-      top: this.scrollTop,
-      left: this.scrollLeft,
-      cells: [...this.data.grids.map(g => g.itemsX).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
-    });
-    return '';
+    if (grid === this.data.grids.at(-1)) this.onAfterDraw();
+
   }
 
 }

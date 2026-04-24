@@ -64,7 +64,7 @@
 </ng-template>
 
 <ng-template #blockLast let-cell>
-  <div class="block_root">
+  <div class="block_root" style="border: 2px solid black;">
     <div class="block" [innerHTML]="cell.content | safehtml"></div>
 
     <div class="block-toolbar">

@@ -2,12 +2,12 @@
 
   <div #root [style.height.px]="maxHeight">
     <div #start class="start" [style.height.px]="data.startHeight"> </div>
-    @for (grid of (data.grids ?? []); track trackById($index, grid)) {
+    @for (grid of data.grids; track trackById($index, grid)) {
       <div
         [id]="'sat-virtual-grid-' + grid.id"
         [style.grid-template-columns]="grid.columns | columnsPipe"
         class="table">
-        @for (column of (grid.columns ?? []); track trackByIndex(i, column); let i = $index) {
+        @for (column of (grid.columns); track trackByIndex(i, column); let i = $index) {
           <div
             class="column-width"
             [column]="column"
@@ -87,8 +87,7 @@
         }
       </div>
     }
-    <div #end class="end" [style.height.px]="data.endHeight"></div>
-    {{callAfterDraw()}}
+    <div #end class="end" [style.height.px]="data.endHeight"></div>    
   </div>
 
 </ng-scrollbar>

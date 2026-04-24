@@ -11,6 +11,10 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 
 /** Модуль */
 @NgModule({
+  imports: [
+    CommonModule,
+    NgScrollbarModule
+  ],
   declarations: [
     SATVirtualGrigComponent,
     PxPipe,
@@ -18,10 +22,6 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
     DynamicHeightDirective,
     DynamicWidthDirective,
     ColumnsPipe
-  ],
-  imports: [
-    CommonModule,
-    NgScrollbarModule
   ],
   exports: [
     SATVirtualGrigComponent
