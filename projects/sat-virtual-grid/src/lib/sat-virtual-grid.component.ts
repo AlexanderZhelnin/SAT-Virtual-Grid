@@ -1,9 +1,15 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { NgScrollbar } from 'ngx-scrollbar';
+import { NgScrollbar, NgScrollbarModule } from 'ngx-scrollbar';
 import { BehaviorSubject, debounceTime, filter, firstValueFrom, fromEvent, Subject, Subscription } from 'rxjs';
 import { Flat } from './flat';
 import { IData, IDataGrid, IGridFlat, IIndex } from './interfaces';
 import { ICell, ICellChange, IColumn, IDrawResult, IGrid, IHeight, IId, IRow, IScrollPosition, ISource, IUpdate } from './models';
+import { DynamicHeightDirective } from './dynamic-height.directive';
+import { DynamicWidthDirective } from './dynamic-width.directive';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+import { ColumnsPipe } from './pipes/columns.pipe';
+import { PxPipe } from './pipes/px.pipe';
+import { NgTemplateOutlet } from '@angular/common';
 
 
 /** Компонент виртуального скроллинга таблицы */
@@ -13,7 +19,7 @@ import { ICell, ICellChange, IColumn, IDrawResult, IGrid, IHeight, IId, IRow, IS
   templateUrl: './sat-virtual-grid.component.html',
   styleUrls: ['./sat-virtual-grid.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgTemplateOutlet, DynamicHeightDirective, DynamicWidthDirective, SafeHtmlPipe, ColumnsPipe, PxPipe, NgScrollbarModule]
 })
 export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy, IHeight
 {

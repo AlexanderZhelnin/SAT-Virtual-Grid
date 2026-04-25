@@ -1,10 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 /** Добавление px если число */
-@Pipe({
-    name: 'pxPipe',
-    standalone: false
-})
+@Pipe({ name: 'pxPipe' })
 export class PxPipe implements PipeTransform
 {
   /**

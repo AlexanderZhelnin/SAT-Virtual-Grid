@@ -4,10 +4,7 @@ import { IColumn, IUpdate } from './models';
 
 /** Директива динамического определения ширины */
 // eslint-disable-next-line @angular-eslint/directive-selector
-@Directive({
-    selector: '[dynamicWidth]',
-    standalone: false
-})
+@Directive({ selector: '[dynamicWidth]' })
 export class DynamicWidthDirective implements AfterViewInit, OnDestroy
 {
   /** Колонки */

@@ -28,7 +28,7 @@ sat-virtual-grid {
       opacity 1s cubic-bezier(0.23, 1, 0.32, 1);
     // position: absolute;
     position: sticky;
-    
+
     top: 50%;
     left: 0.3rem;
 
@@ -136,7 +136,7 @@ sat-virtual-grid {
 }
 
 .number {
-  border: 1px solid black;
+  border: 2px solid black;
   position: relative;
 
   height: 100%;
@@ -145,7 +145,6 @@ sat-virtual-grid {
   justify-content: center;
   background-color: white;
 }
-
 
 .block {
   position: relative;

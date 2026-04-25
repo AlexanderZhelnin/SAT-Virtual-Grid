@@ -5,20 +5,22 @@ import { CommonModule } from '@angular/common';
 
 
 import { AppComponent } from './app.component';
-import { SATVirtualGridModule } from 'sat-virtual-grid';
+// import { SATVirtualGridModule } from 'sat-virtual-grid';
 import { SafeHtmlPipe } from './safe-html.pipe';
 import { DocParamComponent } from './doc-param/doc-param.component';
+import { SATVirtualGrigComponent } from 'sat-virtual-grid';
 
 @NgModule({
   declarations: [
     AppComponent,
     SafeHtmlPipe,
-    DocParamComponent,
+    DocParamComponent
   ],
   imports: [
     BrowserModule,
     CommonModule,
-    SATVirtualGridModule
+    SATVirtualGrigComponent
+    // SATVirtualGridModule
   ],
   providers: [],
   bootstrap: [AppComponent]

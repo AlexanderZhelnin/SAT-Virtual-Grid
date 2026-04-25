@@ -9,15 +9,15 @@ import { Component, HostBinding, Input } from '@angular/core';
 })
 export class DocParamComponent
 {
-  // /** Код параметра */
-  // private _dataCode?: string;
+  /** Код параметра */
+  private _dataCode?: string;
 
-  // /** @returns Получить код параметра */
-  // get dataCode(): string | undefined { return this._dataCode; }
+  /** @returns Получить код параметра */
+  get dataCode(): string | undefined { return this._dataCode; }
 
-  // /** Установить код параметра */
-  // @HostBinding('attr.data-code')
-  // @Input()
-  // set dataCode(code: string | undefined) { this._dataCode = code; }
+  /** Установить код параметра */
+  @HostBinding('attr.data-code')
+  @Input()
+  set dataCode(code: string | undefined) { this._dataCode = code; }
 
 }
