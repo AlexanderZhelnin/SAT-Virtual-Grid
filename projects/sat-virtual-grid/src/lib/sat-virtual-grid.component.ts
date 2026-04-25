@@ -218,7 +218,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
           if (i < 0) i = 0;
 
           this.index.startYIndex = i;
-          this.update().then(() => 
+          this.update().then(() =>
           {
             this.cdr.detectChanges();
             this.sc.scrollTo({ top: position.top, left: position.left, duration: 0 });
@@ -258,7 +258,6 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.cdr.markForCheck();
-    //this.cdr.detectChanges();
   }
 
   /**

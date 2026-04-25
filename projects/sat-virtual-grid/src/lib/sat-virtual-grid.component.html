@@ -7,7 +7,7 @@
         [id]="'sat-virtual-grid-' + grid.id"
         [style.grid-template-columns]="grid.columns | columnsPipe"
         class="table">
-        @for (column of (grid.columns); track trackByIndex(i, column); let i = $index) {
+        @for (column of grid.columns; track trackByIndex(i, column); let i = $index) {
           <div
             class="column-width"
             [column]="column"
@@ -26,7 +26,7 @@
         }
 
         {{getCells(grid)}}
-        
+
         @for (cell of grid.itemsX; track trackById($index, cell)) {
           <div
             [id]="cell.id"
@@ -53,7 +53,7 @@
             (mouseout)="cell.mouseout?.($event, cell)"
             >
             <ng-container *ngTemplateOutlet="cell.template ?? defaultTemplate; context: {$implicit: cell}"></ng-container>
-             
+
           </div>
         }
         @for (cell of grid.items; track trackById($index, cell)) {
@@ -78,16 +78,16 @@
             (dblclick)="cell.dblclick?.($event, cell)"
             (mouseover)="cell.mouseover?.($event, cell)"
             (mouseout)="cell.mouseout?.($event, cell)"
-            
+
             >
-            
+
             <ng-container *ngTemplateOutlet="cell.template ?? defaultTemplate; context: {$implicit: cell}"></ng-container>
-             
+
           </div>
         }
       </div>
     }
-    <div #end class="end" [style.height.px]="data.endHeight"></div>    
+    <div #end class="end" [style.height.px]="data.endHeight"></div>
   </div>
 
 </ng-scrollbar>
