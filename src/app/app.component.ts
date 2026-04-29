@@ -8,9 +8,7 @@ import { loremIpsum } from 'lorem-ipsum';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
-  // animations: [Show]
-  ,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false
 })
 export class AppComponent implements OnInit
@@ -40,7 +38,7 @@ export class AppComponent implements OnInit
   /** Шаблон добавить колонки */
   @ViewChild('addColumn', { static: true }) addColumnTemplate!: TemplateRef<any>;
 
-  /** Виртуальный грид */
+  /** Виртуальная сетка */
   @ViewChild('vg') vg!: SATVirtualGrigComponent;
 
   /** Уникальный идентификатор */
@@ -62,6 +60,50 @@ export class AppComponent implements OnInit
     { width: '10rem' },
     { width: '4rem' },
 
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
+    { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
     { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
     { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
     { width: '0px' }, { width: 'minmax(25rem, 1fr)' },
@@ -180,7 +222,7 @@ export class AppComponent implements OnInit
             left: 160,
             maxHeight: 21
           } as ICell,
-          ...[...Array((this.columns.length - 3) / 2).keys()]
+          ...[...new Array((this.columns.length - 3) / 2).keys()]
             .map(j => ({
               id: `_${++this.id}`,
               colStart: j * 2 + 3,
@@ -190,7 +232,7 @@ export class AppComponent implements OnInit
               top: 20,
             } as ICell)),
 
-          ...[...Array((this.columns.length - 3) / 2).keys()]
+          ...[...new Array((this.columns.length - 3) / 2).keys()]
             .map(j => ({
               id: `_${++this.id}`,
               content: `${j}-${l}`,
@@ -223,7 +265,7 @@ export class AppComponent implements OnInit
             maxHeight: 21
           } as ICell,
 
-          ...[...Array((this.columns.length - 3) / 2).keys()]
+          ...[...new Array((this.columns.length - 3) / 2).keys()]
             .map(j => ({
               id: `_${++this.id}`,
               content: `${j}-${l}`,
@@ -236,7 +278,7 @@ export class AppComponent implements OnInit
             } as ICell)),
           subSection = {
             id: `_${++this.id}`,
-            content: `Субраздел ${l} - ${0}`,
+            content: `Подраздел ${l} - ${0}`,
             colStart: 1,
             rowspan: 201,
             template: this.subSectionTemplate,
@@ -253,7 +295,7 @@ export class AppComponent implements OnInit
           this.generateRow([
             subSection = {
               id: `_${++this.id}`,
-              content: `Субраздел ${l} - ${i}`,
+              content: `Подраздел ${l} - ${i}`,
               colStart: 1,
               rowspan: 200,
               template: this.subSectionTemplate,
@@ -261,13 +303,13 @@ export class AppComponent implements OnInit
               zIndex: 102 + this.zIndex++,
               left: 0
             },
-            ...this.generateBlockCells(this.source.grids.value[this.source.grids.value.length - 1].columns.value)
+            ...this.generateBlockCells(this.source.grids.value.at(-1)!.columns.value)
           ], item),
           this.generateAddRow(item, subSection),
           ...this.generateRowsBlock(99, item, subSection));
     }
 
-    this.lastRow = this.source.grids.value[this.source.grids.value.length - 1].rows.value[0].children![this.source.grids.value[this.source.grids.value.length - 1].rows.value[0].children!.length - 1];
+    this.lastRow = this.source.grids.value.at(-1)!.rows.value[0].children![this.source.grids.value.at(-1)!.rows.value[0].children!.length - 1];
     //this.source.grids.value[0].rows.next(this.items);
     this.source.grids.next(this.source.grids.value);
 
@@ -281,7 +323,7 @@ export class AppComponent implements OnInit
    */
   onUnLoadedCells(e: ICellChange): void
   {
-    // console.log('onUnLoadedCells', e.cells);
+    console.log('onUnLoadedCells', e.cells);
     setTimeout(() => e.waiter.next(), 0);
   }
 
@@ -291,7 +333,7 @@ export class AppComponent implements OnInit
    */
   onLoadedCells(e: ICellChange): void
   {
-    // console.log('onLoadedCells', e.cells);
+    console.log('onLoadedCells', e.cells);
 
     if (e.cells.some(cell => cell.row === this.lastRow))
       this.loadGrids();
@@ -357,7 +399,7 @@ export class AppComponent implements OnInit
   {
     const count = (columns.length - 3) / 2;
 
-    const collapsedCells: ICell[] = [...Array(count - 1).keys()]
+    const collapsedCells: ICell[] = [...new Array(count - 1).keys()]
       .map(j => ({
         id: `_${++this.id}`,
         height: 100,
@@ -391,7 +433,7 @@ export class AppComponent implements OnInit
         left: 160
       },
       ...collapsedCells,
-      ...[...Array(count - 1).keys()]
+      ...[...new Array(count - 1).keys()]
         .map(j => ({
           id: `_${++this.id}`,
           height: 100,
@@ -408,7 +450,7 @@ export class AppComponent implements OnInit
         colStart: (count - 1) * 2 + 4,
         content: this.generateRandomString(maxWords),
         template: this.blockLastTemplate,
-        linkedHeightCell: collapsedCells[collapsedCells.length - 1],
+        linkedHeightCell: collapsedCells.at(-1),
         position: 'sticky',
         right: 30,
         zIndex: 3
@@ -422,7 +464,6 @@ export class AppComponent implements OnInit
         zIndex: 2,
         position: 'sticky',
         right: 0
-
       }
 
     ];
@@ -459,7 +500,7 @@ export class AppComponent implements OnInit
    */
   generateRow(cells: ICell[], parent: IRow | undefined = undefined, subSection: ICell | undefined = undefined): IRow
   {
-    const row: IRow = { cells, parent, grid: parent ? parent.grid : this.source.grids.value[this.source.grids.value.length - 1], tag: subSection };
+    const row: IRow = { cells, parent, grid: parent ? parent.grid : this.source.grids.value.at(-1)!, tag: subSection };
     cells.forEach(cell => cell.row = row);
 
     return row;
@@ -474,16 +515,15 @@ export class AppComponent implements OnInit
   generateRandomString(max: number): string
   {
     let result = loremIpsum({
-      count: 2,                // Number of "words", "sentences", or "paragraphs"
-      format: 'plain',         // "plain" or "html"
-      paragraphLowerBound: 3,  // Min. number of sentences per paragraph.
-      paragraphUpperBound: 3,  // Max. number of sentences per paragarph.
-      random: Math.random,     // A PRNG function
-      sentenceLowerBound: 5,   // Min. number of words per sentence.
+      count: 2,                             // Number of "words", "sentences", or "paragraphs"
+      format: 'plain',                      // "plain" or "html"
+      paragraphLowerBound: 3,               // Min. number of sentences per paragraph.
+      paragraphUpperBound: 3,               // Max. number of sentences per paragarph.
+      random: Math.random,                  // A PRNG function
+      sentenceLowerBound: 5,                // Min. number of words per sentence.
       sentenceUpperBound: Math.round(max),  // Max. number of words per sentence.
-      suffix: '\n',            // Line ending, defaults to "\n" or "\r\n" (win32)
-      units: 'sentences',      // paragraph(s), "sentence(s)", or "word(s)"
-      //words: ["ad", ...]       // Array of words to draw from
+      suffix: '\n',                         // Line ending, defaults to "\n" or "\r\n" (win32)
+      units: 'sentences',                   // paragraph(s), "sentence(s)", or "word(s)"
     });
 
     result = result
@@ -663,8 +703,8 @@ export class AppComponent implements OnInit
     this.mouseCell = cell;
     this.prevWidth = this.getColumn(cell).widthInPx!;
 
-    window.addEventListener('mousemove', this.handleMousemove, true);
-    window.addEventListener('mouseup', this.handleMouseup, true);
+    globalThis.addEventListener('mousemove', this.handleMousemove, true);
+    globalThis.addEventListener('mouseup', this.handleMouseup, true);
   }
 
   /**
@@ -673,11 +713,7 @@ export class AppComponent implements OnInit
    */
   private readonly handleMousemove = (event: MouseEvent): void =>
   {
-    //this.movedPosition$.next(event.offsetX);
-
     const dWidth = this.prevWidth + (event.clientX - this.prevMousePosition);
-    // this.prevMousePosition = event.clientX;
-
     const column = this.mouseCell.row!.grid.columns.value[this.mouseCell.colStart! - 1];
     column.width = `${dWidth}px`;
     column.widthInPx = dWidth;
@@ -700,24 +736,16 @@ export class AppComponent implements OnInit
    * @param cell Ячейка
    * @returns Колонка
    */
-  getColumn(cell: ICell): IColumn
-  {
-    return cell.row!.grid.columns.value[cell.colStart! - 1];
-  }
+  getColumn(cell: ICell): IColumn { return cell.row!.grid.columns.value[cell.colStart! - 1]; }
 
   /** Обработчик событий отжатия мышки */
-  private readonly handleMouseup = (): void =>
-  {
-    // this.widthChanged.next();
-    this.unsubscribeMouse();
-  };
+  private readonly handleMouseup = (): void => { this.unsubscribeMouse(); };
 
   /** Отписка от событий мышки */
   private unsubscribeMouse(): void
   {
-    // this.movedPosition$.next(0);
-    window.removeEventListener('mousemove', this.handleMousemove, true);
-    window.removeEventListener('mouseup', this.handleMouseup, true);
+    globalThis.removeEventListener('mousemove', this.handleMousemove, true);
+    globalThis.removeEventListener('mouseup', this.handleMouseup, true);
   }
 
 }

@@ -10,11 +10,10 @@
         @for (column of grid.columns; track trackByIndex(i, column); let i = $index) {
           <div
             class="column-width"
-            [column]="column"
             [columns]="grid.columns"
             [root]="getThis"
             [style.grid-column-start]="i + 1"
-            dynamicWidth>
+            [dynamicWidth]="column">
           </div>
         }
         @if (grid.addedSticky.height) {

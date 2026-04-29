@@ -8,14 +8,12 @@ import { IColumn, IUpdate } from './models';
 export class DynamicWidthDirective implements AfterViewInit, OnDestroy
 {
   /** Колонки */
-  @Input() column: IColumn | undefined;
+  @Input('dynamicWidth') column: IColumn | undefined;
   /** Список колонок */
   @Input() columns: IColumn[] | undefined;
 
   /** Объект обновления */
-  // eslint-disable-next-line @angular-eslint/no-input-rename
-  @Input('root')
-  r: IUpdate | undefined;
+  @Input('root') r: IUpdate | undefined;
 
   /** Отслеживание изменений размера */
   private resizeObserver: ResizeObserver | undefined;

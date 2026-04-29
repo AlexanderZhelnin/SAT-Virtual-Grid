@@ -186,7 +186,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.updateScroll$.pipe(debounceTime(50)).subscribe(position =>
     {
-      const dTime = new Date().getTime();
+      const dTime = Date.now();
       if (dTime - this.lastUpdateScroll > 200)
       {
         this.lastUpdateScroll = 0;
@@ -247,7 +247,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
   /** Обновить */
   async update(): Promise<void>
   {
-    if (!this._itemsFlat.length)
+    if (this._itemsFlat.length == 0)
       this._data = this.clearData;
     else
     {
@@ -292,7 +292,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     this.afterDraw.next({
       top: this.scrollTop,
       left: this.scrollLeft,
-      cells: [...this.data.grids.map(g => g.itemsX).flat(), ...this.data.grids.map(g => g.items ?? []).flat()]
+      cells: [...this.data.grids.flatMap(g => g.itemsX), ...this.data.grids.flatMap(g => g.items ?? [])]
     });
   }
 
@@ -310,7 +310,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
 
     const g = this._itemsFlat.find(gf => gf.id === row.grid.id);
     if (!g) return;
-    const index = g.rows.findIndex(r => r === row);
+    const index = g.rows.indexOf(row);
     const item = g.rows[index];
 
     if (row.isExpanded)
@@ -464,7 +464,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     h = 0;
     flat.forEach(row => { h += row.height ?? 20; });
 
-    result.endHeight = h;//this.maxHeight - result.startHeight - h;
+    result.endHeight = h;
     //#endregion
 
     //#region Вычисление дополнительного заполнения для прикреплённых
@@ -511,8 +511,7 @@ export class SATVirtualGrigComponent implements OnInit, AfterViewInit, OnDestroy
     old.grids.forEach(grid =>
     {
       if (dNew.has(grid.id)) return;
-      removed.push(...grid.items);
-      removed.push(...grid.itemsX);
+      removed.push(...grid.items, ...grid.itemsX);
     });
   }
 
